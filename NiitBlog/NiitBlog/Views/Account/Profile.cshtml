@@ -1,0 +1,397 @@
+﻿@{
+    ViewBag.Title = "用户中心";
+
+}
+
+
+   <link href="~/Content/application.profile.min.css" rel="stylesheet" />
+
+
+<script type="text/javascript">
+    function $$(id) {
+        return document.getElementById(id);
+    }
+    var userAgent = navigator.userAgent.toLowerCase();
+    var is_opera = userAgent.indexOf('opera') != -1 && opera.version();
+    var is_moz = (navigator.product == 'Gecko') && userAgent.substr(userAgent.indexOf('firefox') + 8, 3);
+    var is_ie = (userAgent.indexOf('msie') != -1 && !is_opera) && userAgent.substr(userAgent.indexOf('msie') + 5, 3);
+    var is_mac = userAgent.indexOf('mac') != -1;
+    function AC_GetArgs(args, classid, mimeType) {
+        var ret = new Object();
+        ret.embedAttrs = new Object();
+        ret.params = new Object();
+        ret.objAttrs = new Object();
+        for (var i = 0; i < args.length; i = i + 2) {
+            var currArg = args[i].toLowerCase();
+            switch (currArg) {
+                case "classid": break;
+                case "pluginspage": ret.embedAttrs[args[i]] = 'http://www.macromedia.com/go/getflashplayer'; break;
+                case "src": ret.embedAttrs[args[i]] = args[i + 1]; ret.params["movie"] = args[i + 1]; break;
+                case "codebase": ret.objAttrs[args[i]] = 'http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0'; break;
+                case "onafterupdate": case "onbeforeupdate": case "onblur": case "oncellchange": case "onclick": case "ondblclick": case "ondrag": case "ondragend":
+                case "ondragenter": case "ondragleave": case "ondragover": case "ondrop": case "onfinish": case "onfocus": case "onhelp": case "onmousedown":
+                case "onmouseup": case "onmouseover": case "onmousemove": case "onmouseout": case "onkeypress": case "onkeydown": case "onkeyup": case "onload":
+                case "onlosecapture": case "onpropertychange": case "onreadystatechange": case "onrowsdelete": case "onrowenter": case "onrowexit": case "onrowsinserted": case "onstart":
+                case "onscroll": case "onbeforeeditfocus": case "onactivate": case "onbeforedeactivate": case "ondeactivate": case "type":
+                case "id": ret.objAttrs[args[i]] = args[i + 1]; break;
+                case "width": case "height": case "align": case "vspace": case "hspace": case "class": case "title": case "accesskey": case "name":
+                case "tabindex": ret.embedAttrs[args[i]] = ret.objAttrs[args[i]] = args[i + 1]; break;
+                default: ret.embedAttrs[args[i]] = ret.params[args[i]] = args[i + 1];
+            }
+        }
+        ret.objAttrs["classid"] = classid;
+        if (mimeType) {
+            ret.embedAttrs["type"] = mimeType;
+        }
+        return ret;
+    }
+    function AC_FL_RunContent() {
+        var ret = AC_GetArgs(arguments, "clsid:d27cdb6e-ae6d-11cf-96b8-444553540000", "application/x-shockwave-flash");
+        var str = '';
+        if (is_ie && !is_opera) {
+            str += '<object ';
+            for (var i in ret.objAttrs) {
+                str += i + '="' + ret.objAttrs[i] + '" ';
+            }
+            str += '>';
+            for (var i in ret.params) {
+                str += '<param name="' + i + '" value="' + ret.params[i] + '" /> ';
+            }
+            str += '</object>';
+        } else {
+            str += '<embed ';
+            for (var i in ret.embedAttrs) {
+                str += i + '="' + ret.embedAttrs[i] + '" ';
+            }
+            str += '></embed>';
+        }
+       
+        return str;
+
+    }
+</script>
+<div>
+    <a class="btn btn-info right"  target="_blank" href="/@Model.UserName/Manage">管理</a>
+</div>
+<h2 class="utitle">@ViewBag.uid</h2>
+<div id="ucenter">
+    <div class="uoperation">
+        <ul>
+            <li class="u_index tabbtn u_current">基本信息</li>
+            <li class="u_avatar tabbtn">上传头像</li>
+            <li class="u_myblog tabbtn">我的博客</li>
+            <li class="u_changeprofile tabbtn">修改资料</li>
+            <li class="u_changepwd tabbtn">修改密码</li>
+        </ul>
+    </div>
+    <div class="ucontent">
+        <!--UserMain-->
+        <div class="tabitem profile_item" style="display: block;">
+            <div class="uitem">基本信息</div>
+            <div class="uinfo">
+                <ul>
+                    <li>
+                        @{
+                            var s="/Content/Avatar/upload/avatars/noavatar_medium.gif";
+                            if(string.IsNullOrEmpty(Model.HeadPic))
+                            {
+                                s = Model.HeadPic;
+                            }
+                            <img id="uavatar" src="@s" onerror="this.onerror=null;this.src='/Content/Avatar/upload/avatars/noavatar_medium.gif';" />
+                        }
+                    </li>
+                    <li>昵称：@Model.NickName</li>
+                    <li>性别：@Model.Gender</li>
+                    <li>自我介绍：@Model.SelfIntro</li>
+                    <li>个人描述：@Model.Description</li>
+                </ul>
+            </div>
+        </div>
+        <!--UserAvatar-->
+        <div class="tabitem profile_item">
+            <div class="uitem">上传头像</div>
+            <table cellspacing="0" cellpadding="0">
+                <tbody>
+                    <tr>
+                        <th></th>
+                        <td>
+                            <div class="avatararea clearfix">
+                                <p>
+                                    <img id="avatar" onerror="this.onerror=null;this.src='/Content/Avatar/upload/avatars/noavatar_medium.gif';" />
+                                </p>
+                                <p><a href="javascript:;" onclick="$$('avatarctrl').style.display = ''" class="btna">上传头像</a></p>
+                            </div>
+                            <div id="avatarctrl" style="display: none">
+                                <script type="text/javascript">
+                                    document.write(AC_FL_RunContent('width', '540', 'height', '253', 'scale', 'exactfit', 'src', '@ViewBag.avatarFlashParam', 'id', 'mycamera', 'name', 'mycamera', 'quality', 'high', 'bgcolor', '#ffffff', 'wmode', 'transparent', 'menu', 'false', 'swLiveConnect', 'true', 'allowScriptAccess', 'always'));
+                                </script>
+                            </div>
+                            <script type="text/javascript">
+                                function updateavatar(sender, args) {
+                                    $$('avatar').src = '@(ViewBag.Localhost)/Content/Avatar/upload/avatars/@(ViewBag.uid)/medium.jpg?random=1' + Math.random();
+                                    $$('uavatar').src = '@(ViewBag.Localhost)/Content/Avatar/upload/avatars/@(ViewBag.uid)/medium.jpg?random=1' + Math.random();
+                                    $$('avatarctrl').style.display = 'none';
+                                }
+                                updateavatar();
+                            </script>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!--UserBlog-->
+        <div class="tabitem profile_item">
+            <div class="uitem">我的博客</div>
+            <div class="container-fluid">
+                <div class="row-fluid">
+                    <div class="span4">
+                        <a href="/@ViewBag.uid"  class="btna" target="_blank">博客首页</a>
+                    </div>
+                    <div class="span4">
+                        <a href="/@ViewBag.uid/Article/Post"  class="btna" target="_blank">写文章</a>
+                    </div>
+                    <div class="span4">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--UserProfile-->
+        <div class="tabitem">
+            <div class="uitem">修改信息</div>
+            <div class="container-fluid">
+                <div class="row-fluid">
+                    <div class="span12">
+                        <form id="editorprofile">
+                            <div class="control-group">
+                                <label class="control-label" for="nickname">昵称</label>
+                                <div class="controls">
+                                    <input type="text" class="input-large" name="nickname" id="nickname" value="@Model.NickName">
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label" for="gender">性别</label>
+                                <div class="controls">
+                                    <select name="gender" id="gender" class="input-large">
+                                        <option>===请选择===</option>
+                                        <option>男</option>
+                                        <option>女</option>
+                                        <option>保密</option>
+                                    </select>
+                                    <script type="text/javascript">
+                                        $("#gender").val("@Model.Gender")
+                                    </script>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label" for="SelfIntro">自我介绍（不多于150字）</label>
+                                <div class="controls">
+                                    <textarea class="input-xxlarge" name="SelfIntro" id="SelfIntro" rows="8">@Model.SelfIntro</textarea>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label" for="Description">个人描述（不多于150字）</label>
+                                <div class="controls">
+                                    <textarea class="input-xxlarge" name="Description" id="Description" rows="8">@Model.Description</textarea>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <div class="controls">
+                                    <button type="submit" class="btn">提交</button>
+                                    <img src="~/Images/loading.gif" id="loding" style="display: none" />
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tabitem">
+            <div class="uitem">修改密码</div>
+            <div class="container-fluid">
+                <div class="row-fluid">
+                    <div class="span12">
+                        <form id="changepwdfrm">
+                            <div class="control-group">
+                                <label class="control-label" for="oldpassword">原密码</label>
+                                <div class="controls">
+                                    <input type="password" class="input-large" name="oldpassword" id="oldpassword">
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label" for="newpassword">新密码</label>
+                                <div class="controls">
+                                    <input type="password" class="input-large" name="newpassword" id="newpassword">
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label" for="confirmnewpassword">确认新密码</label>
+                                <div class="controls">
+                                    <input type="password" class="input-large" name="confirmnewpassword" id="confirmnewpassword">
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <div class="controls">
+                                    <button type="submit" class="btn">提交</button>
+                                    <img src="/Content/Images/loading.gif" id="loding1" style="display: none" />
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.form.js"></script>
+<script type="text/javascript">
+    $(function () {
+        $("#ucenter .tabbtn").click(function () {
+            var index = $("#ucenter .tabbtn").index($(this));
+            $(this).addClass("u_current").siblings("li").removeClass("u_current");
+            $($("#ucenter .tabitem").get(index)).show().siblings(".tabitem").hide();
+        });
+
+        RefreshAvatar();
+
+        $("#editorprofile").validate({
+            errorClass: "help-inline",
+            rules: {
+                nickname: {
+                    required: true,
+                    minlength: 3
+                },
+                gender: {
+                    required: true
+                },
+                SelfIntro: {
+                    required: true,
+                    maxlength: 150
+                },
+                Description: {
+                    required: true,
+                    maxlength: 150
+                }
+            },
+            messages: {
+                nickname: {
+                    required: "昵称为空",
+                    minlength: "昵称最短长度为3位"
+                },
+                gender: {
+                    required: "请选择性别"
+                },
+                SelfIntro: {
+                    required: "个人介绍为空",
+                    maxlength: "个人介绍最多150字"
+                },
+                Description: {
+                    required: "自我描述为空",
+                    maxlength: "自我描述最多150字"
+                }
+            },
+            highlight: function (element) {
+                $(element).closest('.control-group').removeClass('success').addClass('error');
+            },
+            success: function (element) {
+                element
+				.text('OK!').addClass('valid')
+				.closest('.control-group').removeClass('error').addClass('success');
+            }
+        });
+
+        $('#editorprofile').on('submit', function (e) {
+            e.preventDefault();
+            if ($("#editorprofile").valid()) {
+                $(this).ajaxSubmit({
+                    type: "post",
+                    url: "/Account/EditorProfile?UID=@ViewBag.ID",
+                    beforeSend: function () {
+                        $("#loding").show();
+                    },
+                    success: function (msg) {
+                        $("#loding").hide();
+                        if (msg.Result == "OK") {
+                            alert("修改成功！");
+                            window.location.reload();
+                        } else {
+                            alert(msg.Message);
+                        }
+                    }
+                });
+            }
+        });
+
+        jQuery.validator.addMethod("password", function (value, element) {
+            var val = /^[\w]{6,15}$/;
+            return this.optional(element) || (val.test(value));
+        }, "密码为6到15位,由字母数字下划线组成");
+
+        $("#changepwdfrm").validate({
+            errorClass: "help-inline",
+            rules: {
+                oldpassword: {
+                    required: true,
+                    password: true
+                },
+                newpassword: {
+                    required: true,
+                    minlength: 6,
+                    password: true
+                },
+                confirmnewpassword: {
+                    required: true,
+                    equalTo: "#newpassword"
+                }
+            },
+            messages: {
+                oldpassword: {
+                    required: "旧密码为空"
+                },
+                newpassword: {
+                    required: "新密码为空",
+                    minlength: "密码最小长度为6位"
+                },
+                confirmnewpassword: {
+                    required: "确认密码为空",
+                    equalTo: "两次输入密码不一致不一致"
+                }
+            },
+            highlight: function (element) {
+                $(element).closest('.control-group').removeClass('success').addClass('error');
+            },
+            success: function (element) {
+                element
+				.text('OK!').addClass('valid')
+				.closest('.control-group').removeClass('error').addClass('success');
+            }
+        });
+
+        $('#changepwdfrm').on('submit', function (e) {
+            e.preventDefault();
+            if ($("#changepwdfrm").valid()) {
+                $(this).ajaxSubmit({
+                    type: "post",
+                    url: "/Account/ChangePassWord?UID=@ViewBag.ID",
+                    beforeSend: function () {
+                        $("#loding1").show();
+                    },
+                    success: function (msg) {
+                        $("#loding1").hide();
+                        if (msg.Result == "OK") {
+                            alert("修改成功！");
+                            window.location.reload();
+                        } else {
+                            alert(msg.Message);
+                        }
+                    }
+                });
+            }
+        });
+    });
+
+    //刷新头像
+    function RefreshAvatar() {
+        $('#uavatar').attr("src", '@(ViewBag.Localhost)/Content/Avatar/upload/avatars/@(ViewBag.uid)/medium.jpg?random=1' + Math.random());
+    }
+</script>

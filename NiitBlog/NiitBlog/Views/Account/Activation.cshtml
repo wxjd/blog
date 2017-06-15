@@ -1,0 +1,32 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>激活成功</title>
+    <style type="text/css">
+        label {
+            color:#f00;
+        }
+    </style>
+    <script type="text/javascript">
+        setInterval(function () {
+            var time = document.getElementById('tick');
+            if (time.innerHTML == 0) {
+                window.location.href = "/Account/Profile";
+            } else {
+                time.innerHTML = time.innerHTML - 1;
+            }
+        }, 1000);
+    </script>
+</head>
+<body>
+    <div>
+        恭喜您，激活帐号成功！<label id="tick">3</label>秒后将跳转到个人信息页面
+    </div>
+</body>
+</html>

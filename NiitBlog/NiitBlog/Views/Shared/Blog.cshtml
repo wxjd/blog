@@ -1,0 +1,472 @@
+﻿
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title-@(Model.UserName)的博客 </title>
+    <link href="~/Content/common.css" rel="stylesheet" />
+    <link href="~/Content/twitter-bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/twitter-bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" />
+    <link href="~/Content/pagination.min.css" rel="stylesheet" type="text/css" />
+    @RenderSection("css", required: false)
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <style type="text/css">
+        #tags {
+            position: relative;
+            max-width: 280px;
+            min-height: 150px;
+            overflow: hidden;
+        }
+
+            #tags a {
+                position: absolute;
+                top: 0px;
+                left: 0px;
+                font-family: Microsoft YaHei;
+                font-weight: bold;
+                text-decoration: none;
+                width: 120px;
+            }
+
+        a.size1 {
+            padding: 0px 2px;
+            font-size: 14px;
+            color: #784b9b;
+        }
+
+        a.size2 {
+            padding: 0px 2px;
+            font-size: 14px;
+            color: #d53684;
+        }
+
+        a.size3 {
+            padding: 2px 2px;
+            font-size: 18px;
+            color: #129c30;
+        }
+
+        a.size4 {
+            padding: 2px 2px;
+            font-size: 18px;
+            color: #ee7618;
+        }
+
+        a.size5 {
+            padding: 2px 2px;
+            font-size: 18px;
+            color: #02a3de;
+        }
+
+        a.size6 {
+            padding: 4px 2px;
+            font-size: 20px;
+            color: #cada4b;
+        }
+
+        a.size7 {
+            padding: 4px 2px;
+            font-size: 20px;
+            color: #8d817b;
+        }
+
+        a.size8 {
+            padding: 6px 2px;
+            font-size: 24px;
+            color: #009383;
+        }
+
+        a.size9 {
+            padding: 6px 2px;
+            font-size: 24px;
+            color: #007da4;
+        }
+
+        a.size0 {
+            padding: 6px 2px;
+            font-size: 24px;
+            color: #b49400;
+        }
+
+            a.size1:hover, a.size2:hover, a.size3:hover, a.size4:hover, a.size5:hover, a.size6:hover, a.size7:hover, a.size8:hover, a.size9:hover, a.size0:hover {
+                color: #E13728;
+            }
+
+        .bg {
+            background: url('/Content/Images/slide-02.jpg') repeat-x #fff;
+            height: 300px;
+        }
+
+            .bg .title {
+                margin-left: 200px;
+                margin-top: 80px;
+            }
+
+                .bg .title p {
+                    font-size: larger;
+                    margin-right: 100px;
+                }
+
+        .sidebar {
+            position: absolute;
+            top: 250px;
+            left: 80px;
+            width: 240px;
+        }
+
+            .sidebar .headpic {
+                width: 140px;
+                height: 140px;
+                background-color: #fff;
+                border: 1px solid #ccc;
+                -webkit-box-shadow: 0 1px 3px rgba(0,0,0,.1);
+                -moz-box-shadow: 0 1px 3px rgba(0,0,0,.1);
+                box-shadow: 0 1px 3px rgba(0,0,0,.1);
+            }
+
+        #headpic_img {
+            width: 140px;
+            height: 140px;
+        }
+
+        .sidebar h3 a {
+            font-size: 16px;
+        }
+
+        .sidebar .sidebaritem h3 {
+            border-left: 3px solid #f00;
+            padding-left: 10px;
+        }
+
+        .sidebar .sidebaritem ol {
+            margin-left: 2px;
+        }
+
+            .sidebar .sidebaritem ol li {
+                list-style: none;
+            }
+
+        .article {
+            border-bottom: 1px solid #808080;
+            margin-top: 40px;
+        }
+
+        @@media (max-width: 768px) {
+            .sidebar {
+                position: relative;
+                width: 340px;
+                overflow: hidden;
+                top: 0px;
+                left: 0px;
+            }
+
+            .nickname h3 {
+                position: relative;
+                top: -50px;
+                left: 150px;
+            }
+            .attention h3 {
+                position: relative;
+                margin-top: 160px;
+            }
+
+            .fenge {
+                margin-top: 60px;
+            }
+
+            .sidebaritem {
+                margin-top: 10px;
+            }
+        }
+
+        #login_area {
+            color: #5b5b5b;
+            font-size: 12px;
+            overflow: hidden;
+            text-align: right;
+            height: 22px;
+            line-height: 22px;
+            margin-right: 30px;
+        }
+
+            #login_area a {
+                padding-left: 15px;
+            }
+
+            #login_area ul {
+                list-style: none;
+            }
+
+                #login_area ul li {
+                    display: inline;
+                    padding-left: 15px;
+                }
+    </style>
+</head>
+<body>
+    <div id="login_area" class="clearfix">
+        @if (HttpContext.Current.User.Identity.IsAuthenticated)
+        {
+            <text>
+            @Html.ActionLink(User.Identity.Name, "Profile", "Account", routeValues: null, htmlAttributes: new { @class = "username", @target = "_blank" })
+            @Html.ActionLink("我的相册", "Index", "Album", routeValues: new { username = @HttpContext.Current.User.Identity.Name }, htmlAttributes: null)   
+            @Html.ActionLink("我的博客", "Index", "User", routeValues: new { username = @HttpContext.Current.User.Identity.Name }, htmlAttributes: null)
+            @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm" }))
+            {
+                @Html.AntiForgeryToken()<a href="javascript:document.getElementById('logoutForm').submit()">注销</a>
+            }
+            </text>
+        }
+        else
+        {
+            <ul>
+                <li>@Html.ActionLink("注册", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
+                <li>@Html.ActionLink("登录", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
+            </ul>
+        }
+    </div>
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <div class="span12 bg">
+                <div class="title">
+                    <h1>@Model.NickName </h1>
+                    <p>@Model.SelfIntro</p>
+                </div>
+            </div>
+        </div>
+        <div class="sidebar">
+            <div class="headpic">
+                <a href="/@Model.UserName">
+                    <img  id="headpic_img" src="@Model.HeadPic"/></a>
+            </div>
+            <div class="nickname">
+                <h3 class="text-left text-success left">昵称：<a href="/@Model.UserName">@Model.NickName</a>                
+                </h3>
+            </div>
+            <div class="attention">关注</div>
+            <div class="fenge"></div>
+            <div class="row-fluid sidebaritem clearfix">
+                <div class="span12">
+                    <h3>文章归档
+                    </h3>
+                    <ol id="articlearchives">
+                    </ol>
+                </div>
+            </div>
+             <div class="row-fluid sidebaritem">
+                <div class="span12">
+                    <h3>文章分类
+                    </h3>
+                    <ol id="articlecategory">
+                    </ol>
+                </div>
+            </div>
+            <div class="row-fluid sidebaritem">
+                <div class="span12">
+                    <h3>阅读排行
+                    </h3>
+                    <ol id="readtop">
+                    </ol>
+                </div>
+            </div>
+            <div class="row-fluid sidebaritem">
+                <div class="span12">
+                    <h3>热门标签
+                    </h3>
+                    <div id="tags" class="taglist">
+                    </div>
+                </div>
+            </div>
+            <div class="row-fluid sidebaritem">
+                <div class="span12">
+                    <h3>历史信息
+                    </h3>
+                    <ol>
+                        <li>上次登录时间:@Model.LastLoginTime
+                        </li>
+                        <li>注册时间：@Model.RegTime
+                        </li>
+                        <li>激活时间:@Model.ActiveTime
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        @RenderBody()
+        <input  type="hidden" id="uid" value="@Model.UID"/>
+        <input type="hidden" id="uname" value="@Model.UserName" />
+        <div class="row-fluid">
+            <div class="span12" style="text-align: center;">
+                &copy; @DateTime.Now.Year  Powered By <a href="mailto:niitwxjd@163.com">NIIT博客之学好IT不挨踢</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/Scripts/twitter-bootstrap/bootstrap.min.js"></script>
+
+    @RenderSection("scriptsahead", required: false)
+    <script src="~/Scripts/jquery.tags.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        $window = $(window);
+        if ($window.width <= 768)
+            $("#articlecontent").css({ 'min-height': 50 });
+
+        $("#readtop").tooltip({
+            selector: "a[data-toggle=tooltip]"
+        })
+
+        $("#articlearchives").tooltip({
+            selector: "a[data-toggle=tooltip]"
+        })
+
+        $("#articlecategory").tooltip({
+            selector: "a[data-toggle=tooltip]"
+        })
+
+        $(function () {
+            var uname = $("#uname").val();
+            //加载文章归档
+            loadArticleArchives(uname);
+            //加载文章分类
+            loadarticlecategory(uname);
+            //加载阅读排行
+            loadReadTop(uname);
+            // 加载标签
+            loadHotTags(uname);
+        });
+
+        //加载文章归档
+        function loadArticleArchives(uname) {
+            $.ajax({
+                type: 'POST',
+                url: "/Article/Archive?uid=" + $("#uid").val(),
+                dataType: "json",
+                success: function (data) {
+                    var str = "";
+                    $.each(data, function (i, item) {
+                        str += "<li><a href=\"/" + uname + "?y=" + item.Year + "&m=" + item.Month + " \" title=\"" + item.Year + "年" + item.Month + "月" + "(" + item.Count + ") \" data-toggle='tooltip' data-placement='right' target='_blank'>" + item.Year + "年" + item.Month + "月" + "(" + item.Count + ")</a><li>";
+                    })
+                    $("#articlearchives").append(str);
+                    var h = $('.sidebar').height();
+                    $("#articlecontent").css({ 'min-height': h });
+                },
+                error: function () {
+                    var h = $('.sidebar').height();
+                    $("#articlecontent").css({ 'min-height': h });
+                }
+            });
+        }
+
+
+        //加载文章分类
+        function loadarticlecategory(uname) {
+            $.ajax({
+                type: 'POST',
+                url: "/Article/Category?uid=" + $("#uid").val(),
+                dataType: "json",
+                success: function (data) {
+                    var str = "";
+                    $.each(data, function (i, item) {
+                        str += "<li><a href=\"/" + uname + "?cid=" + item.CID + " \" title=\"" + item.CName + "(" + item.Count + ") \" data-toggle='tooltip' data-placement='right' target='_blank'>" + (item.CName.length > 8 ? item.CName.substring(0, 8) : item.CName) + "(" + item.Count + ")</a><li>";
+                    })
+                    $("#articlecategory").append(str);
+                    var h = $('.sidebar').height();
+                    $("#articlecontent").css({ 'min-height': h });
+                },
+                error: function () {
+                    var h = $('.sidebar').height();
+                    $("#articlecontent").css({ 'min-height': h });
+                }
+            });
+        }
+
+        // 加载热门标签
+        function loadHotTags(uname) {
+            $.ajax({
+                type: 'POST',
+                url: "/User/Tags?uid=" + $("#uid").val(),
+                dataType: "json",
+                success: function (data) {
+                    var str = '';
+                    var items = eval(data.results);
+                    var count = data.count;
+                    $.each(items, function (i, item) {
+                        str += "<a href='/" + uname + "?tid=" + item.TID + "' target='_blank'>" + item.TName + "</a>";
+                    });
+                    $("#tags").html(str);
+                    if (count == 0) {
+                        count = 1;
+                        $("#tags").html('<a href="javascript:void;">未找到标签！</a>');
+                    }
+                    /*多彩tag*/
+                    var tags_a = $("#tags").find("a");
+                    tags_a.each(function () {
+                        var x = 9;
+                        var y = 0;
+                        var rand = parseInt(Math.random() * (x - y + 1) + y);
+                        $(this).addClass("size" + rand);
+                    });
+                    var radius = count * 10 > 140 ? 140 : count * 10;
+                    if (radius * 2 > 150) {
+                        $("#tags").css({ height: radius * 2 });
+                    }
+                    $("#tags").tags({
+                        tspeed: 12,
+                        radius: radius
+                    });
+                    var h = $('.sidebar').height();
+                    $("#articlecontent").css({ 'min-height': h });
+                },
+                error: function () {
+                    var h = $('.sidebar').height();
+                    $("#articlecontent").css({ 'min-height': h });
+                }
+            });
+        }
+
+        //加载阅读排行
+        function loadReadTop(uname) {
+            $.ajax({
+                type: 'POST',
+                url: "/Article/ReadTop?uid=" + $("#uid").val(),
+                dataType: "json",
+                success: function (data) {
+                    var str = "";
+                    $.each(data, function (i, item) {
+                        str += "<li><a href='/" + uname + "/Article/Detail/" + item.AID + "' title=\"" + item.Title + "\" data-toggle='tooltip' data-placement='right' target='_blank'>" + (item.Title.length > 8 ? item.Title.substring(0, 8) : item.Title) + "(" + item.ViewNum + ")</a><li>";
+                    })
+                    $("#readtop").append(str);
+                    var h = $('.sidebar').height();
+                    $("#articlecontent").css({ 'min-height': h });
+                },
+                error: function () {
+                    var h = $('.sidebar').height();
+                    $("#articlecontent").css({ 'min-height': h });
+                }
+            });
+        }
+
+
+ var attention = function (id, success) {
+     var data = { "id": id, "success": success }
+     $.ajax({ type: "post", url: "~/handler/attention", data: data, success: function (message) {
+         if (message.Success) {
+             $("#attention").val("取消关注");
+         }
+         else {
+             $("#attention").val("关注");
+         }
+     }, dataType: "json"
+     });
+ }
+
+
+
+    </script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>
+

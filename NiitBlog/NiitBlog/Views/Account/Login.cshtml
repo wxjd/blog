@@ -1,0 +1,247 @@
+﻿
+
+@{
+    ViewBag.Title = "登录";
+}
+
+<link href="~/Content/common.min.css" rel="stylesheet" />
+<link href="~/Content/twitter-bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/twitter-bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" />
+
+
+
+<style type="text/css">
+    .login-wrapper {
+        width: 400px;
+        height: 370px;
+      
+       margin-top:30px;
+        z-index: 1;
+    }
+
+    .well-white {
+        min-height: 280px;
+        background-color: #fff;
+        border-radius: 4px;
+        padding:20px;
+        border: 2px solid #d5d5d5;
+       
+        position: relative;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        -webkit-border-radius: 6px;
+        -moz-border-radius: 6px;
+        border-radius: 6px;
+        -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, .075);
+        -moz-box-shadow: 0 1px 2px rgba(0,0,0,.075);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, .075);
+    }
+
+        .well-white .bottom20px {
+            padding-bottom: 20px;
+        }
+
+    #frmlogin {
+        margin-left: auto;
+        margin-right: auto;
+        width: 300px;
+        
+    }
+
+        #frmlogin .right a {
+            text-decoration: none;
+            color: #0094ff;
+        }
+
+            #frmlogin .right a:hover {
+                color: #005580;
+            }
+
+    span.valid {
+        width: 30px;
+        height: 30px;
+        background: url(/Content/Images/valid.png) top center no-repeat;
+    }
+
+    #loginbg {
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: -1000;
+    }
+</style>
+
+
+
+<div class="login-wrapper">
+    <div class="well-white bottom20px">
+        <form id="frmlogin" method="post">
+            @Html.AntiForgeryToken()
+            <fieldset>
+                <legend class="form-signin-heading">登录</legend>
+                <span id="messageBox" class="help-block" style="display: none"></span>
+                <label>用户名</label>
+                <input style="height:30px" type="text" autocomplete="off" placeholder="请输入用户名…" id="username" name="username" tabindex="1">
+                <a href="#" class="icon-info-sign" data-toggle="tooltip" data-placement="right" title="用户名由字母和数字组成"></a>
+                <label>密码</label>
+                <input style="height:30px" type="password" placeholder="请输入密码…" id="password" name="password" tabindex="2">
+                <a href="#"  class="icon-info-sign" data-toggle="tooltip" data-placement="right" title="密码由a-z、A-Z、0-9、_组成"></a>
+                <div class="control-group">
+                    <div class="controls">
+                        <input type="checkbox" id="rememberpassword" name="rememberpassword" tabindex="3" style="margin: 0px;">
+                        <span class="help-inline" style="margin-left: 0px;">记住密码？</span>
+                    </div>
+                </div>
+                <div class="control-group" style="position: relative; padding-bottom: 10px;">
+                    <div>
+                        <button type="submit" class="btn btn-success" tabindex="4">登录</button>
+                        <img src="~/content/Images/loading.gif" id="loding" style="display: none" />
+                    </div>
+                    <div style="margin-left: 180px; position: absolute; top: 5px;">
+                        <a href="/Account/ForgetPassword" class="link-option">忘记密码?</a> | <a href="/Account/Register" class="link-option">注册</a>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</div>
+<!--
+<a id="feedback" href="#myModal" data-toggle="modal"></a>-->
+@Html.Partial("_FeedBack")
+<!--<div id="loginbg">
+    <img class="bg" src="">
+</div>
+  -->  
+<input type="hidden" value="@ViewBag.ReturnUrl" id="ReturnUrl" />
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/jquery.validate.min.js" type="text/javascript"></script>
+<script src="~/Scripts/jquery.form.min.js" type="text/javascript"></script>
+
+
+<script type="text/javascript">
+        $(function(){
+            $('.icon-info-sign').tooltip();
+            $("#frmlogin").validate({
+                errorClass: "field-validation-error",
+                errorLabelContainer: "#messageBox",
+                rules: {
+                    username: {
+                        required: true,
+                        minlength: 5
+                    },
+                    password: {
+                        required: true,
+                        minlength: 6
+                    }
+                },
+                messages: {
+                    username: {
+                        required: "用户名为空",
+                        minlength: "用户名最短长度为5位"
+                    },
+                    password: {
+                        required: "密码为空",
+                        minlength: "密码最短长度为6位"
+                    }
+                },
+                highlight: function (element, errorClass) {
+                    $(element).css({ border: "1px solid red" });
+                },
+                unhighlight: function (element, errorClass) {
+                    $(element).css({ border: "1px solid #CCC" });
+                }
+            });
+
+            $('#frmlogin').on('submit', function (e) {
+                e.preventDefault();
+                if ($("#frmlogin").valid()) {
+                    $(this).ajaxSubmit({
+                        type: "post",
+                        url: "/Account/Loginajax?ReturnUrl=" + encodeURI($("#ReturnUrl").val()),
+                        beforeSend: function () {
+                            $("#loding").show();
+                        },
+                        success: function (msg) {
+                            $("#loding").hide();
+                            if (msg.Result == "OK") {
+                                window.location.href = decodeURI(msg.Message);
+                            } else {
+                                alert(msg.Message);
+                            }
+                        }
+                    });
+                }
+            });
+
+            $("#username").focus();
+
+            $(".bg").css({ width: $(window).width(), height: $(window).height() });
+
+            $(window).resize(function () {
+                $(".bg").css({ width: $(window).width(), height: $(window).height() });
+            });
+
+            $("#compliantfrm").validate({
+                errorClass: "field-validation-error",
+                rules: {
+                    title: {
+                        required: true,
+                        rangelength: [5, 100]
+                    },
+                    text: {
+                        required: true,
+                        rangelength: [5, 2000]
+                    },
+                    email: {
+                        required: true,
+                        email: true
+                    }
+                },
+                messages: {
+                    title: {
+                        required: "主题为空",
+                        rangelength: "主题长度必须介于 5 和 100 之间"
+                    },
+                    text: {
+                        required: "内容为空",
+                        rangelength: "主题长度必须介于 5 和 2000 之间"
+                    },
+                    email: {
+                        required: "邮箱为空",
+                        email: "邮箱地址格式错误"
+                    }
+                },
+                highlight: function (element) {
+                    $(element).closest('.control-group').removeClass('success').addClass('error');
+                },
+                success: function (element) {
+                    element
+                    .closest('.control-group').removeClass('error').addClass('success');
+                }
+            });
+
+            $('#compliantfrm').on('submit', function (e) {
+                e.preventDefault();
+                if ($("#compliantfrm").valid()) {
+                    $(this).ajaxSubmit({
+                        type: "post",
+                        url: "/FeedBack/Index",
+                        success: function (msg) {
+                            if (msg.Result == "OK") {
+                                alert("提交成功！");
+                                $("#title").val("");
+                                $("#text").val("");
+                                $("#email").val("");
+                                $("#btn_close").click();
+                            } else {
+                                alert(msg.Message);
+                            }
+                        }
+                    });
+                }
+            });
+        })
+</script>

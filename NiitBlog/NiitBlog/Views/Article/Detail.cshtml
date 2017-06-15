@@ -1,0 +1,371 @@
+﻿@{
+    Layout = "~/Views/Shared/Blog.cshtml";
+}
+@section css{
+    <link href="~/Content/jquery.comment.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/prettify.min.css" rel="stylesheet" />
+    <style type="text/css">
+        #commentSection {
+            margin-top: 100px;
+        }
+
+        .login_tips {
+            background-image: url('/Content/Images/add_comment_ico.png');
+            background-repeat: no-repeat;
+            margin-top: 10px;
+            padding: 0px 0px 10px 25px;
+            font-weight: bold;
+        }
+
+            .login_tips a {
+                text-decoration: underline;
+            }
+
+        a:hover {
+            color: black;
+        }
+
+        a:visited {
+            color: rgb(67, 113, 166);
+        }
+
+        a:link, a:active {
+            color: rgb(67, 113, 166);
+        }
+
+        #jiathis {
+            margin-top: 50px;
+        }
+        .prenextlink {
+            margin-top:50px;
+        }
+    </style>
+}
+
+
+<style type="text/css">
+    .hide_box {
+        z-index: 999;
+        filter: alpha(opacity=50);
+        background: #666;
+        opacity: 0.5;
+        -moz-opacity: 0.5;
+        left: 0;
+        top: 0;
+        height: 99%;
+        width: 100%;
+        position: fixed;
+        display: none;
+    }
+
+    .shang_box {
+        width: 550px;
+        height: 400px;
+        padding: 10px;
+        background-color: #fff;
+        border-radius: 10px;
+        position: fixed;
+        z-index: 1000;
+        left: 50%;
+        top: 20%;
+        margin-left: 0px;
+        margin-top: 0px;
+        border: 1px dotted #dedede;
+        display: none;
+    }
+
+        .shang_box img {
+            border: none;
+            border-width: 0;
+        }
+
+    .dashang {
+        display: block;
+        margin: 5px auto;
+        text-align: center;
+        transition: all 0.3s;
+        width: 80px;
+        height: 80px;
+        background-image: url('/Content/dashangimg/shang.png');
+        background-repeat: no-repeat;
+     
+    }
+
+        .dashang:hover {
+            background: url(/Content/dashangimg/shang2.png) no-repeat scroll 0% 0% transparent;
+        }
+
+    .shang_close {
+        float: right;
+        display: inline-block;
+    }
+
+    .shang_logo {
+        display: block;
+        text-align: center;
+        margin: 20px auto;
+    }
+
+    .shang_tit {
+        width: 100%;
+        height: 75px;
+        text-align: center;
+        line-height: 66px;
+        color: #a3a3a3;
+        font-size: 16px;
+        background: url('/Content/dashangimg/cy-reward-title-bg.jpg');
+        font-family: 'Microsoft YaHei';
+        margin-top: 7px;
+        margin-right: 2px;
+    }
+
+        .shang_tit p {
+            color: #a3a3a3;
+            text-align: center;
+            font-size: 16px;
+        }
+
+    .shang_payimg {
+        width: 150px;
+        height: 150px;
+        border: 0px solid #EA5F00;
+        margin: 0 auto;
+        border-radius: 3px;
+    }
+
+        .shang_payimg img {
+            display: block;
+            text-align: center;
+            width: 140px;
+            height: 140px;
+        }
+
+    .pay_explain {
+        text-align: center;
+        margin: 10px auto;
+        font-size: 12px;
+        color: #545454;
+    }
+
+    .radiobox {
+        width: 16px;
+        height: 16px;
+        background-image: url('/Content/dashangimg/radio2.jpg');
+        background-color: red;
+        display: block;
+        float: left;
+        margin-top: 5px;
+        margin-right: 14px;
+    }
+
+    .checked .radiobox {
+        background: url('/Content/dashangimg/radio1.jpg');
+    }
+
+    .shang_payselect {
+        text-align: center;
+        margin: 0 auto;
+        margin-top: 40px;
+        cursor: pointer;
+        height: 60px;
+        width: 280px;
+    }
+
+        .shang_payselect .pay_item {
+            display: inline-block;
+            margin-right: 10px;
+            float: left;
+        }
+
+    .shang_info {
+        clear: both;
+    }
+
+        .shang_info p, .shang_info a {
+            color: #C3C3C3;
+            text-align: center;
+            font-size: 12px;
+            text-decoration: none;
+            line-height: 2em;
+        }
+</style>
+
+
+<div class="row-fluid">
+    <div class="span3">
+    </div>
+    <div class="span9" id="articlecontent">
+        <div class="article-detail" id="detail">
+            <img id="loadingimg" src="~/Content/Images/loading.gif" style="display: none;" />
+        </div>
+       <!-- JiaThis Button BEGIN -->
+       <div class="jiathis_style" id="jiathis">
+	        <span class="jiathis_txt">分享到：</span>
+        	<a class="jiathis_button_tsina">新浪微博</a>
+	        <a class="jiathis_button_tqq">腾讯微博</a>
+	        <a class="jiathis_button_qzone">QQ空间</a>
+        	<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+	        <a class="jiathis_counter_style"></a>
+
+       </div>
+       <!-- JiaThis Button END -->
+        <br/>
+
+
+        
+        <!--打赏按钮-->
+        <div style="margin-bottom:20px;">
+            <a title="打赏，支持一下" class="dashang" onclick="dashangToggle()" href="javascript:void(0)">
+
+            </a>
+        </div>
+
+
+        <div class="content">
+            
+
+            <div class="hide_box"><!--遮罩--></div>
+            <div class="shang_box">
+                <a class="shang_close" href="javascript:void(0)" onclick="dashangToggle()" title="关闭">
+                    <img src="~/Content/dashangimg/close.jpg" alt="取消">
+                </a>
+                <div class="shang_tit">
+                    <p>感谢您的支持，我会继续努力的!</p>
+                </div>
+
+                <div class="shang_payimg">
+                    <img src="~/Content/dashangimg/alipayimg.jpg" alt="扫码支持" title="扫一扫">
+                </div>
+                <div class="pay_explain">扫码打赏，你说多少就多少</div>
+
+                <div class="shang_payselect">
+                    <div class="pay_item checked" data-id="alipay">
+                        <span class="radiobox"></span>
+                        <span class="pay_logo">
+                            <img src="~/Content/dashangimg/alipay.jpg" alt="支付宝">
+                        </span>
+                    </div>
+                    <div class="pay_item" data-id="wechatpay">
+                        <span class="radiobox"></span>
+                        <span class="pay_logo">
+                            <img src="~/Content/dashangimg/wechat.jpg" alt="微信">
+                        </span>
+                    </div>
+                </div>
+
+                <div class="shang_info">
+                    <p>打开<span id="shang_pay_txt">支付宝</span>扫一扫，即可进行扫码打赏哦</p>
+                </div>
+            </div>
+        </div>
+
+
+
+       <div id="commentSection">
+            @if (HttpContext.Current.User.Identity.IsAuthenticated)
+            { 
+                <input type="hidden" value="false" class="hiddeninput" />
+            }
+            else
+            {
+                <input type="hidden" value="true" class="hiddeninput" />
+                <div class="login_tips">注册用户登录后才能发表评论，请 <a rel="nofollow" href="/Account/Login" class="underline">登录</a> 或 <a rel="nofollow" href="/Account/Register" class="underline">注册</a>，<a href="/">访问</a>网站首页。</div>
+            }
+       </div>
+    </div>
+</div>
+<input type="hidden" value="@ViewBag.aid" id="aid" />
+<input type="hidden" value="@HttpContext.Current.User.Identity.Name" id="commentusername" />
+<!-- UJian Button BEGIN -->
+<a href="http://www.ujian.cc" style="border:0;"><img src="http://img.ujian.cc/pixel.png" alt="友荐云推荐" style="border:0;padding:0;margin:0; visibility:hidden" /></a>
+<!-- UJian Button END -->
+@section scriptsahead{
+    <script src="~/Scripts/prettify.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            var loadarticle = function (aid) {
+                $.ajax({
+                    type: "post",
+                    url: "/Article/Detailajax?aid=" + aid,
+                    beforeSend: function () { $("#loadingimg").css({ 'margin-left': "380px" }).show() },
+                    success: function (data) {
+                        $("#loadingimg").hide();
+                        var uname = $("#uname").val();
+                        var str = "";
+                        str += "<h3>" + data.Title + "</h3>";
+                        str += "<div style=\"margin-bottom:60px;\"><p class=\"right\">创建日期：" + data.CreateTime + " 浏览数：" + data.ViewNum + " 评论数：" + data.CommentNum + "</div>";
+                        str += data.Content;
+                        str += "<div class=\"prenextlink\">";
+                        if (data.pre.id != -1)
+                            str += "<p>上一篇：<a href=\"/" + uname + "/Article/Detail/" + data.pre.id + "\">" + data.pre.title + "</a></p>"
+                        if (data.next.id != 0)
+                            str += "<p>下一篇：<a href=\"/" + uname + "/Article/Detail/" + data.next.id + "\">" + data.next.title + "</a></p>"
+                        str += "</div>";
+                        $("#detail").append(str);
+                        $(".prettyprint").addClass("linenums");
+                        window.prettyPrint && prettyPrint();
+                    }
+                });
+            };
+
+            var aid = $("#aid").val();
+            loadarticle(aid);
+        })
+    </script>
+}
+@section scripts{
+    <script src="~/Scripts/jquery.comment.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        $(function () {
+            var aid = $("#aid").val();
+            var commentusername = $("#commentusername").val();
+            var $hide = $(".hiddeninput").val();
+            var readonly;
+            if ($hide == "true") {
+                readonly = true;
+            } else {
+                readonly = false;
+            }
+
+            $("#commentSection").comments({
+                getCommentsUrl: "/Article/GetComments?aid=" + aid + "&commentusername=" + commentusername,
+                postCommentUrl: "/Article/PostComment?aid=" + aid + "&commentusername=" + commentusername,
+                deleteCommentUrl: "/Article/DeleteComment?aid=" + aid + "&commentusername=" + commentusername,
+                displayAvatar: true,
+                readOnly: readonly,
+                callback: {
+                    beforDelete: function () {
+                        return confirm("确定删除？?");
+                    }
+                },
+                localization: {
+                    headerText: "评论",
+                    commentPlaceHolderText: "呃！说点什么吧！（150字以内）",
+                    sendButtonText: "发送",
+                    replayButtonText: "回复",
+                    deleteButtonText: "删除"
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1369396845872467" charset="utf-8"></script>
+    <script type="text/javascript" src="http://v1.ujian.cc/code/ujian.js?type=slide&num=3&btn=3&fade=1"></script>
+
+
+    <!-- 代码要放在标签定义后-->
+<script type="text/javascript">
+
+    //打赏
+    jQuery(".pay_item").click(function () {
+        jQuery(this).addClass('checked').siblings('.pay_item').removeClass('checked');
+        var dataid = jQuery(this).attr('data-id');
+        jQuery(".shang_payimg img").attr("src", "/Content/dashangimg/" + dataid + "img.jpg");
+        jQuery("#shang_pay_txt").text(dataid == "alipay" ? "支付宝" : "微信");
+    });
+    function dashangToggle() {
+        jQuery(".hide_box").fadeToggle();//$(".hide_box").fadeToggle();
+        jQuery(".shang_box").fadeToggle();
+    };
+
+</script>
+}

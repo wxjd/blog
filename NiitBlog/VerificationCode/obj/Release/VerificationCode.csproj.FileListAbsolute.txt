@@ -1,0 +1,8 @@
+D:\Blog\VerificationCode\bin\Release\VerificationCode.dll
+D:\Blog\VerificationCode\bin\Release\VerificationCode.pdb
+D:\Blog\VerificationCode\obj\Release\VerificationCode.dll
+D:\Blog\VerificationCode\obj\Release\VerificationCode.pdb
+G:\ASP.NET MVC多用户博客源码20130701\VerificationCode\bin\Release\VerificationCode.dll
+G:\ASP.NET MVC多用户博客源码20130701\VerificationCode\bin\Release\VerificationCode.pdb
+G:\ASP.NET MVC多用户博客源码20130701\VerificationCode\obj\Release\VerificationCode.dll
+G:\ASP.NET MVC多用户博客源码20130701\VerificationCode\obj\Release\VerificationCode.pdb

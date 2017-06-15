@@ -1,0 +1,590 @@
+﻿@{
+    ViewBag.Title = "首页";
+}
+@using NiitBlog.Models;
+
+    <style type="text/css">
+        ::selection {
+            background: #F64747;
+            color: #FFF;
+            text-shadow: none;
+        }
+
+        ::-moz-selection {
+            background: #F64747;
+            color: #FFF;
+            text-shadow: none;
+        }
+
+        ::-webkit-selection {
+            background: #F64747;
+            color: #FFF;
+            text-shadow: none;
+        }
+
+        .hero-unit {
+            background-color: #E7ECEF;
+            min-width: 1024px;
+        }
+
+        .body_content {
+        
+            width: 100%;
+            height: auto;
+            margin: 10px auto;
+            display: block;
+         
+                background-color:#E7ECEF;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+
+            .body_content a:hover {
+                text-decoration: none;
+            }
+
+        .info-bar {
+            width: 65%;
+            height: 150px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            margin: 10px 0 30px 30px;
+            -webkit-box-shadow: 0px 2px 2px rgba(0,0,0,0.15);
+            -moz--box-shadow: 0px 2px 2px rgba(0,0,0,0.15);
+            box-shadow: 0px 2px 2px rgba(0,0,0,0.15);
+            filter: progid:DXImageTransform.Microsoft.Shadow(color='#b1b1b1', Direction=135, Strength=5);
+        }
+
+        #slider ul, #slider li {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+       
+        .getin-area {
+            float: right;
+            position: relative;
+            width: 300px;
+            height: 150px;
+            margin-top: -180px;
+            margin-right: 30px;
+            text-align: center;
+            line-height: 5px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0px 2px 2px rgba(0,0,0,0.15);
+            -webkit-box-shadow: 0px 2px 2px rgba(0,0,0,0.15);
+            -moz-box-shadow: 0px 2px 2px rgba(0,0,0,0.15);
+            filter: progid:DXImageTransform.Microsoft.Shadow(color='#b1b1b1', Direction=120, Strength=5);
+        }
+
+        .welcome {
+            width: 220px;
+            margin-left: 30px;
+            margin-top: 30px;
+        }
+
+            .welcome p {
+                font-size: 12px;
+                color: #4e4e4e;
+                line-height: 15px;
+            }
+
+        .resigster-btn {
+            position: relative;
+            margin-top: 12px;
+            margin-left: 25px;
+            float: left;
+        }
+
+        .login-btn {
+            float: left;
+            margin-top: 12px;
+            margin-left: 22px;
+        }
+
+        .getin-area a{
+            font-size: 16px;
+            padding: 8px 35px;
+            color: #479ff6;
+            text-shadow: 0 1px 0 #FFF;
+            border-radius: 30px;
+            font-weight: 400;
+            border: 1px solid #bcc6fe;
+            background-color: #d4eefc;
+            background-image: -webkit-linear-gradient(top,#eaf2fc,#d4eefc);
+            background-image: -moz-linear-gradient(top,#eaf2fc,#d4eefc);
+            box-shadow: inset 0 0 2px rgb(255,255,255);
+            -webkit-box-shadow: inset 0 0 2px rgb(255,255,255);
+            -moz-box-shadow: inset 0 0 2px rgb(255,255,255);
+        }
+
+        .doing-title {
+            position: relative;
+            float: right;
+            margin-top: 5px;
+            margin-right: 600px;
+        }
+
+            .doing-title p {
+                z-index: 1000;
+                position: relative;
+                font-size: 16px;
+                color: #4e4e4e;
+                background-color: #FFF;
+
+                box-shadow: 0px 2px 2px rgba(0,0,0,0.15);
+                -webkit-box-shadow: 0px 2px 2px rgba(0,0,0,0.15);
+                -moz-box-shadow: 0px 2px 2px rgba(0,0,0,0.15);
+                padding: 10px 20px;
+                border-radius: 30px;
+            }
+
+        .divider-landing {
+            background-color: #e1d8cd;
+            height: 1px;
+            width: 1060px;
+            box-shadow: 0 1px 0 black;
+            position: absolute;
+            top: 26px;
+            left: -370px;
+        }
+
+        .landing-artcile-list {
+            width: 100%;
+            margin: 5px 30px 10px 30px;
+            background-color:transparent;
+            position: relative;
+            float: left;
+        }
+
+            .landing-artcile-list .artcile {
+                margin-bottom: 10px;
+                margin-top:10px;
+                padding: 5px 5px;
+                width: 95%;
+                
+           
+                float: left;
+                background-color: #FFFFFF;
+                border-radius: 10px;
+                box-shadow: 0px 2px 2px rgba(0,0,0,0.15);
+                -webkit-box-shadow: 0px 2px 2px rgba(0,0,0,0.15);
+            }
+
+        .artcilebg {
+            border-radius: 5px;
+            position: relative;
+            margin: 10px;
+            background-color: #E7ECEF;
+            width: 98%;
+            
+           
+            line-height: 28px;
+            overflow: hidden;
+            white-space: normal;
+            cursor: pointer;
+        }
+
+        .artcile-title {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+            .artcile-title p {
+                font-size: 14px;
+                color: #1b1b1b;
+                line-height: 20px;
+                text-shadow: 0 1px 0 #FFF;
+            }
+
+        .artcile-content {
+            padding: 0px 10px;
+            
+        }
+
+            .artcile-content p {
+                font-size: 12px;
+                color: #747474;
+                line-height: 20px;
+                text-shadow: 0 1px 0 #FFF;
+            }
+
+        .author .a-avatar {
+            padding-left: 10px;
+        }
+
+            .author .a-avatar img {
+                float: left;
+                border-radius: 5px;
+            }
+
+        .author .a-name {
+            margin-left: 10px;
+            margin-top: 7px;
+        }
+
+            .author .a-name a {
+                font-size: 14px;
+                color: #407697;
+                margin-top: 0px;
+                margin-left: 10px;
+            }
+
+        .author .a-info {
+            margin-left: 70px;
+        }
+
+            .author .a-info p {
+                color: #8e8d8d;
+                font-size: 12px;
+                font-weight: 300;
+            }
+
+            .author .a-info img {
+                margin-right: 5px;
+                margin-top: -3px;
+            }
+
+        .newartcile {
+            float: left;
+            position: absolute;
+            width: 280px;
+            height: 150px;
+            margin-top: -180px;
+            margin-left: 672px;
+            text-align: center;
+            line-height: 5px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0px 2px 2px rgba(0,0,0,0.15);
+            -webkit-box-shadow: 0px 2px 2px rgba(0,0,0,0.15);
+            -moz-box-shadow: 0px 2px 2px rgba(0,0,0,0.15);
+            filter: progid:DXImageTransform.Microsoft.Shadow(color='#b1b1b1', Direction=120, Strength=5);
+        }
+
+            .newartcile h3 {
+                font-size: 14px;
+                color: #4e4e4e;
+                text-shadow: 0 1px 0 #FFF;
+                font-weight: normal;
+            }
+
+            .newartcile p {
+                font-size: 13px;
+                color: #4e4e4e;
+                text-shadow: 0 1px 0 #FFF;
+            }
+
+        .newartcile-btn {
+            margin-top: 26px;
+        }
+
+            .newartcile-btn img {
+                margin-right: 5px;
+                margin-bottom: 5px;
+            }
+
+        .photo-list {
+            width: 100%;
+            margin: 5px 30px 0px 40px;
+            background: transparent;
+            position: relative;
+            float: left;
+            font: 12px/1.5 \5B8B\4F53,sans-serif;
+        }
+
+
+            .photo-list a {
+                text-decoration: none;
+                outline: none;
+            }
+
+        .photo-list, a:hover {
+            text-decoration: underline;
+        }
+
+            .photo-list a:active {
+                star: expression(this.onFocus=this.blur());
+            }
+
+            .photo-list a:focus {
+                outline: none;
+            }
+
+        /* 瀑布流样式 */
+        .waterfall {
+            overflow: hidden;
+            zoom: 1;
+            width: 100%;
+        }
+
+        .wf_inner {
+            margin: 15px auto;
+        }
+
+        .wf_col {
+            position: relative;
+            min-height: 473px;
+            _height: 473px;
+        }
+
+        .wf_item {
+            box-sizing: border-box;
+            width: 235px;
+            border: 1px solid #d2d2d2;
+            box-shadow: 5px 3px 3px rgba(221,221,221,.32);
+            color: #565656;
+            float: left;
+            overflow: hidden;
+            zoom: 1;
+            position: absolute;
+        }
+
+        .wf_item_inner {
+            margin: 15px;
+        }
+
+        .wf_item .thumb {
+            background: #E9E9E9;
+            position: relative;
+            display: block;
+            overflow: hidden;
+            font-size: 0;
+        }
+
+        .wf_item .thumb_img {
+            width: 100%;
+            max-width: 100%;
+            -ms-interpolation-mode: bicubic; /*解决IE7缩放图片会失真*/
+        }
+
+        .wf_item .title {
+            height: 27px;
+            margin: 7px 0 0;
+            color: #538700;
+            font-size: 17px;
+            font-family: \5FAE\8F6F\96C5\9ED1;
+        }
+
+            .wf_item .title a {
+                color: #060;
+            }
+
+        .wf_item .desc {
+            word-wrap: break-word;
+            word-break: break-all;
+            color: #888;
+        }
+
+        .wf_result {
+            height: 32px;
+            line-height: 32px;
+            margin-top: 15px;
+            text-align: center;
+            color: #666;
+        }
+
+        .wf_loading {
+            background: url(/Content/Images/Waterfallloading.gif) center center no-repeat;
+        }
+
+        #backTop {
+            cursor: pointer;
+            width: 38px;
+            height: 38px;
+            background: url(/Content/Images/backTop.gif) no-repeat 0 -39px;
+        }
+
+            #backTop:hover {
+                background-position: 0 0;
+            }
+
+
+        /* 固定菜单样式*/
+        .wf_list_menu {
+        }
+
+            .wf_list_menu h3 {
+                height: 28px;
+                line-height: 28px;
+                color: #000;
+                font-size: 14px;
+                font-weight: bold;
+            }
+
+            .wf_list_menu p {
+                font-size: 0;
+            }
+
+                .wf_list_menu p a {
+                    display: inline-block;
+                    margin: 4px 4px 4px 0;
+                    width: 63px;
+                    line-height: 27px;
+                    color: #000;
+                    text-align: center;
+                    font-size: 14px;
+                    cursor: pointer;
+                }
+
+                    .wf_list_menu p a.on {
+                        background: #8BB843;
+                        color: #fff;
+                        border-radius: 2px;
+                    }
+
+                    .wf_list_menu p a:hover {
+                        color: #060;
+                        text-decoration: underline;
+                    }
+
+                    .wf_list_menu p a.on:hover {
+                        color: #fff;
+                        text-decoration: none;
+                    }
+
+            .wf_list_menu .line_b {
+                border-bottom: 1px dashed #eaeaea;
+                padding-bottom: 10px;
+                margin-bottom: 10px;
+            }
+        /* end 瀑布流样式 */
+    </style>
+    
+
+
+<div id="bodybg">
+
+    <!-- bodycontent -->
+    <div class="body_content" style="overflow: hidden;">
+        <div class="info-bar">
+            <div id="slider" class="people-review" style="margin-left: 25px; padding-top: 10px; width: 555px; height: 241px; overflow: hidden;">
+                <ul>
+                    <li style="float: left;">
+                        <div class="people-avatar" style="float: left;">
+                            <a href="" >
+                                <img src="~/content/Images/logoNiit.jpg" style="margin-right: 25px; margin-top: 5px;">
+                            </a>
+                        </div>
+                        <div class="review-content" style="line-height: 20px; padding-right: 25px; width: 650px;">
+                            <h2 style="font-size: 14px; color: #000000; font-weight: normal; padding-top: 5px;">NIIT轻博客</h2>
+                            <p style="font-size: 12px; color: #4e4e4e">专为NIIT学员打造的轻博客。这里可以教你一些基础编程知识，如果你有疑问可以在新手指导文章下发表评论。</p>
+                        </div>
+                    </li>
+                   
+                </ul>
+            </div>
+
+        </div>
+        @if (!HttpContext.Current.User.Identity.IsAuthenticated)
+        {
+            <div class="getin-area">
+                <div class="welcome">
+                    <p style="font-size: 14px;">欢迎抵达NIIT轻博客网站</p>
+                    <p>大家可以在这里发表文章，新建相册，发表评论等。</p>
+                </div>
+                <div class="resigster-btn">
+                    <a href="/Account/Register" style="color: #f64747;">注册</a>
+                </div>
+                <div class="login-btn">
+                    <a href="/Account/Login">登录</a>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="getin-area">
+                <div class="welcome">
+                    <p>在这里你可以发表文章</p>
+                    <p>发现优美的文章，发表评论</p>
+                    <div class="newartcile-btn">
+                        <a href="/@HttpContext.Current.User.Identity.Name/Article/Post" target="_blank">
+                            <img src="~/Content/Images/new.png" width="18" height="20">撰写新博客
+                        </a>
+                    </div>
+                 </div>
+                </div>
+        }
+        <div class="doing-title">
+            <p>最新博文<sup style="color: red;"> new</sup></p>
+            <b class="divider-landing"></b>
+        </div>
+        <div class="landing-artcile-list" id="artcile-list">
+            @foreach (LatestArticleViewModel article in ViewData["LatestArticle"] as List<LatestArticleViewModel>)
+            {
+                <div class="artcile">
+                    <a href="/@article.UserName/Article/Detail/@article.AID" target="_blank">
+                        <div class="artcilebg">
+                            <div class="artcile-title">
+                                <p><span>@article.Title</span></p>
+                            </div>
+                            <div class="artcile-content">
+                                <p>@article.Summery</p>
+                            </div>
+                        </div>
+                    </a>
+                    <div class="author">
+                        <div class="a-avatar">
+                            
+                            <img src="~/Content/images/niitblog.JPG" style="width: 40px; height: 40px;">
+                           
+                        </div>
+                        <div class="a-name">
+                            <a href="/@article.UserName">@article.UserName</a>
+                        </div>
+                        <div class="a-info">
+                            <p>
+                                <img src="~/content/Images/clock.png" width="14" height="14" alt="发表日期">@(article.CreateTime.ToShortDateString())&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;<img src="~/content/Images/readtimes.png" alt="阅读次数">@(article.ViewNum)&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;<img src="~/content/Images/icon-comment-gray.png" width="18" height="18" style="margin-top: -4px;" alt="评论次数">@(article.CommentNum)
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="doing-title">
+            <p>相册广场<sup style="color: red;"> new</sup></p>
+            <b class="divider-landing" ></b>
+        </div>
+        <div class="photo-list" id="waterfall">
+        </div>
+    </div>
+</div>
+
+    <script src="~/Scripts/jquery-1.10.2.min.js" type="text/javascript"></script>
+    <script src="~/Scripts/easySlider1.5.min.js" type="text/javascript"></script>
+    <script src="~/Scripts/jquery.waterfall.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#slider").easySlider({
+                auto: true,
+                continuous: true
+            });
+
+            // 按需加载方式
+            var wf_page = 0;
+            $('#waterfall').waterfall({
+                ajaxFunc: function (success, error) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/Home/GetPhotoList',
+                        cache: false,
+                        data: { 'page': ++wf_page,ListItemNum:4},
+                        timeout: 2000,
+                        success: success,
+                        error: error
+                    });
+                },
+                createHtml: function (data) {
+                    return '<div class="wf_item_inner">' +
+                              '<a href="/' + data.UserName + '/Album/' + data.AlbumID + '"  target="_blank" title="查看相册">' +
+                                '<img class="thumb_img"  src="' + data.Thumbnailw + '" />' +
+                              '</a>' +
+                              '<p class="desc" style="margin-top:1px;">' + data.PhotoName + '</p>' +
+						      '<p class="desc">' + data.Description + '</p>' +
+                              '<a style="display:block;color:#060;" href="' + data.Path + '" target="_blank">查看大图</a>' +
+                          '</div>';
+                }
+            });
+        });
+    </script>

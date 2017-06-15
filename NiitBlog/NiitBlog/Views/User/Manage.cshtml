@@ -1,0 +1,806 @@
+﻿@{
+    Layout = null;
+    ViewBag.Title = "管理";
+}
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js">
+<!--<![endif]-->
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title </title>
+    <link href="~/Content/common.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/twitter-bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/pagination.min.css" rel="stylesheet" type="text/css"/>
+    <link href="~/Content/application.manage.min.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div id="login_area" class="clearfix">
+        @if (HttpContext.Current.User.Identity.IsAuthenticated)
+        {
+            <text>
+            @Html.ActionLink(User.Identity.Name, "Profile", "Account", routeValues: null, htmlAttributes: new { @class = "username" })
+            @Html.ActionLink("我的相册", "Index", "Album", routeValues: new { username = @HttpContext.Current.User.Identity.Name }, htmlAttributes: null)
+            @Html.ActionLink("我的博客", "Index", "User", routeValues: new { username = @HttpContext.Current.User.Identity.Name }, htmlAttributes: null)
+            @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm" }))
+            {
+                @Html.AntiForgeryToken()
+<a href="javascript:document.getElementById('logoutForm').submit()">注销</a>
+            }
+            </text>
+        }
+        else
+        {
+            <ul>
+                <li>@Html.ActionLink("注册", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
+                <li>@Html.ActionLink("登录", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
+            </ul>
+        }
+    </div>
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <div class="span12 bg">
+                <div class="title">
+                    <h1>@Model.NickName </h1>
+                    <p>@Model.SelfIntro</p>
+                </div>
+            </div>
+        </div>
+        <div class="sidebar">
+            <div class="headpic">
+                <img  id="headpic_img" src="@Model.HeadPic"/>
+            </div>
+            <div class="nickname">
+                <h3 class="text-left text-success left">昵称：<a href="/@Model.UserName">@Model.NickName</a></h3>
+            </div>
+        </div>
+    </div>
+    <div class="row-fluid" id="managecontent">
+        <div class="span12">
+            <div class="writearticle">
+                <a class="btn btn-info right" target="_blank"  href="/@Model.UserName/Article/post">写文章</a>
+            </div>
+            <div class="tabbable tabs-left" id="tabs">
+                <ul class="nav nav-tabs">
+                    <li class="active">
+                        <a href="#panel-1" data-toggle="tab">文章</a>
+                    </li>
+                    <li>
+                        <a href="#panel-2" data-toggle="tab" id="tab-category">分类</a>
+                    </li>
+                    <li>
+                        <a href="#panel-3" data-toggle="tab" id="tab-tag">标签</a>
+                    </li>
+                    <li>
+                        <a href="#panel-4" data-toggle="tab" id="tab-album">相册</a>
+                    </li>
+                    <li>
+                        <a href="#panel-5" data-toggle="tab" id="tab-photo">照片</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="panel-1">
+                        <div id="List">
+                            <img id="loadingimg" src="/Content/Images/loading.gif" style="display: none;" />
+                        </div>
+                        <div id="Pagination" class="pagination">
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="panel-2">
+                        <div id="CategoryList">
+                            <img id="loadingimg1" src="/Content/Images/loading.gif" style="display: none;" />
+                        </div>
+                        <div id="categoryPagination" class="pagination">
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="panel-3">
+                        <div id="TagList">
+                            <img id="loadingimg2" src="/Content/Images/loading.gif" style="display: none;" />
+                        </div>
+                        <div id="tagPagination" class="pagination">
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="panel-4">
+                        <div id="AlbumList">
+                            <img id="loadingimg3" src="/Content/Images/loading.gif" style="display: none;" />
+                        </div>
+                        <div id="albumPagination" class="pagination">
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="panel-5">
+                        <div id="PhotoList">
+                            <img id="loadingimg4" src="/Content/Images/loading.gif" style="display: none;" />
+                        </div>
+                        <div id="photoPagination" class="pagination">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <input  type="hidden" id="uid" value="@Model.UID"/>
+    <input  type="hidden" id="uname" value="@Model.UserName"/>
+    <input type="hidden" value="@ViewBag.RecordCount" id="recordcount" />
+    <input type="hidden" value="@ViewBag.CategoryRecordCount" id="categoryrecordcount" />
+    <input type="hidden" value="@ViewBag.TagRecordCount" id="tagrecordcount" />
+    <input type="hidden" value="@ViewBag.AlbumRecordCount" id="albumrecordcount" />
+    <input type="hidden" value="@ViewBag.PhotoRecordCount" id="photorecordcount" />
+    <div class="row-fluid">
+        <div class="span12" style="text-align: center;">
+            &copy; @DateTime.Now.Year   Powered By <a href="mailto:niitwxjd@163.com">NIIT博客之学好IT不挨踢</a>
+        </div>
+    </div>
+    <div id="uptphoto" style="display: none">
+        <div id="uptphoto-ct">
+            <div id="uptphoto-header">
+                <h2>更新照片信息</h2>
+                <a class="modal_close" href="#"></a>
+            </div>
+            <div id="uptphoto-body">
+                <form id="frmupdatephoto" enctype="multipart/form-data" method="post">
+                    <input type="hidden" name="pid" id="pid" />
+                    <div class="control-group">
+                        <label class="control-label" for="photoname">相册</label>
+                        <div class="controls">
+                            @Html.DropDownList("album", "===请选择===")
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="photoname">照片名称</label>
+                        <div class="controls">
+                            <input type="text" class="input-large" name="photoname" id="photoname">
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="photodescription">照片描述</label>
+                        <div class="controls">
+                            <textarea class="input-large" name="photodescription" id="photodescription" rows="6" style="width: 90%;"></textarea>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <div class="controls">
+                            <img src="/Content/Images/loading.gif" id="loding" class="right" style="display: none; margin-top: 8px;" />
+                            <button type="submit" class="btn right">更新</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <a id='Modal' class="btn" href="#uptphoto" rel="leanModal" style="display:none;"></a> 
+    <script src="~/Scripts/jquery-1.7.1.min.js" type="text/javascript"></script> <!--此处不能是1.10.2版，不兼容，否则分类等信息不会显示-->
+    <script src="~/Scripts/twitter-bootstrap/bootstrap.min.js" type="text/javascript"></script>
+    <script src="~/Scripts/jquery.form.min.js" type="text/javascript"></script>
+    <script src="~/Scripts/jquery.pagination.min.js" type="text/javascript"></script>
+    <script src="~/Scripts/jquery.leanModal.min.js"  type="text/javascript"></script>
+    <script src="~/Scripts/jquery.validate.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var ListItemNum = 5; //每页显示多少条信息
+        var pageindex;
+        var category_pageindex;
+        var tag_pageindex;
+        var album_pageindex;
+        var photo_pageindex;
+        var $upt;
+        $(function () {
+            $("a[rel*=leanModal]").leanModal({ top: 50, closeButton: ".modal_close" });
+
+            ///--------------文章------------------////////////
+            // 创建分页
+            $("#Pagination").pagination($("#recordcount").val(),
+            {
+                num_edge_entries: 1, //边缘页数
+                num_display_entries: 5, //主体页数
+                callback: paginationCallback, //回调函数
+                items_per_page: ListItemNum, //每页显示多少项
+                prev_text: "前一页",
+                next_text: "后一页"
+            });
+
+            $("#Pagination").hide();
+
+            $("#articlelist .delete").live("click", function () {
+                if (confirm("您真的确定要删除吗(删除不可恢复)？请确认！") == true) {
+                    var $this = $(this);
+                    $.ajax({
+                        type: "post",
+                        url: "/User/DeleteArticle?aid=" + $this.attr("del") + "&uid=" + $("#uid").val(),
+                        success: function (msg) {
+                            if (msg.Result == "OK") {
+                                $this.parent().parent().remove();
+                                var s = $('#articlelist')[0].rows;
+                                if (s.length == 1) {
+                                    window.location.reload();
+                                }
+                            } else {
+                                alert(msg.Message);
+                            }
+                        }
+                    })
+                }
+            })
+
+            ///--------------类别------------------////////////
+            $("#tab-category").one("click", function () {
+                // 创建分页
+                $("#categoryPagination").pagination($("#categoryrecordcount").val(),
+                {
+                    num_edge_entries: 1, //边缘页数
+                    num_display_entries: 5, //主体页数
+                    callback: categorypaginationCallback, //回调函数
+                    items_per_page: ListItemNum, //每页显示多少项
+                    prev_text: "前一页",
+                    next_text: "后一页"
+                });
+
+                $("#categoryPagination").hide();
+
+
+                var c = true;
+
+                $("#categorylist .update").live("click", function () {
+                    if (c == true) {
+                        c = false;
+                        var $this = $(this);
+                        var $upt = $this.parent().parent().children('.cname');
+                        var txt = $upt[0].innerHTML;
+                        var str = "<div id='div-upt'><input maxlength='25' style='margin-bottom:0px' type='text' value='" + txt + "' id='updatetxt'/><a class='btn' id='save'>保存</a> <a class='btn' id='cancel'>取消</a></div>";
+                        $upt[0].innerHTML = str;
+
+                        $('#save').click(function () {
+                            if ($.trim($("#updatetxt").val()).length > 0 && $.trim($("#updatetxt").val()).length <= 30) {
+                                var cname = $("#updatetxt").val();
+                                $.ajax({
+                                    type: "post",
+                                    url: "/User/UpdateCategory",
+                                    data: { cid: $this.attr("upt"), cname: cname, uid: $("#uid").val() },
+                                    success: function (msg) {
+                                        if (msg.Result == "OK") {
+                                            alert("修改成功");
+                                            $upt.remove('#div-upt');
+                                            $upt.text(cname);
+                                            c = true;
+                                        } else {
+                                            alert(ex.Message);
+                                        }
+                                    },
+                                    error: function (event, XMLHttpRequest, ajaxOptions, thrownError) {
+                                        // thrownError 只有当异常发生时才会被传递 this;
+                                    }
+                                })
+                            } else {
+                                alert("类别名为空,最长为30个字符");
+                            }
+                            return false;
+                        })
+
+                        $('#cancel').click(function () {
+                            $upt.remove('#div-upt');
+                            $upt.text(txt);
+                            c = true;
+                            return false;
+                        })
+                    }
+                });
+
+                $("#categorylist .delete").live("click", function () {
+                    var $this = $(this);
+                    $.ajax({
+                        type: "post",
+                        url: "/User/GetArticlesCountByUIDandCID?cid=" + $this.attr("del") + "&uid=" + $("#uid").val(),
+                        success: function (data) {
+                            var str = "该分类中有" + data + "篇文章，删除该分类将会删除这些文章(删除不可恢复)";
+                            if (confirm(str + "，请确认！") == true) {
+                                $.ajax({
+                                    type: "post",
+                                    url: "/User/DeleteCategory?cid=" + $this.attr("del") + "&uid=" + $("#uid").val(),
+                                    success: function (msg) {
+                                        if (msg.Result == "OK") {
+                                            $this.parent().parent().remove();
+                                            var s = $('#categorylist')[0].rows;
+                                            if (s.length == 1) {
+                                                window.location.reload();
+                                            }
+                                        } else {
+                                            alert(msg.Message);
+                                        }
+                                    }
+                                })
+                            }
+                        }
+                    })
+                })
+            })
+
+
+            //--------------------标签-------------------------------
+            $("#tab-tag").one("click", function () {
+                // 创建分页
+                $("#tagPagination").pagination($("#tagrecordcount").val(),
+                {
+                    num_edge_entries: 1, //边缘页数
+                    num_display_entries: 5, //主体页数
+                    callback: tagpaginationCallback, //回调函数
+                    items_per_page: ListItemNum, //每页显示多少项
+                    prev_text: "前一页",
+                    next_text: "后一页"
+                });
+
+                $("#tagPagination").hide();
+
+                var c = true;
+
+                $("#taglist .update").live("click", function () {
+                    if (c == true) {
+                        c = false;
+                        var $this = $(this);
+                        var $upt = $this.parent().parent().children('.tname');
+                        var txt = $upt[0].innerHTML;
+                        var str = "<div id='div-tagupt'><input maxlength='25' style='margin-bottom:0px' type='text' value='" + txt + "' id='tagupdatetxt' /><a class='btn' id='tagsave'>保存</a> <a class='btn' id='tagcancel'>取消</a></div>";
+                        $upt[0].innerHTML = str;
+
+                        $('#tagsave').click(function () {
+                            if ($.trim($("#tagupdatetxt").val()).length > 0 && $.trim($("#tagupdatetxt").val()).length <= 30) {
+                                var tname = $("#tagupdatetxt").val();
+                                $.ajax({
+                                    type: "post",
+                                    url: "/User/UpdateTag",
+                                    data: { tid: $this.attr("upt"), tname: tname, uid: $("#uid").val() },
+                                    success: function (msg) {
+                                        if (msg.Result == "OK") {
+                                            alert("修改成功");
+                                            $upt.remove('#div-tagupt');
+                                            $upt.text(tname);
+                                            c = true;
+                                        } else {
+                                            alert(ex.Message);
+                                        }
+                                    },
+                                    error: function (event, XMLHttpRequest, ajaxOptions, thrownError) {
+                                        // thrownError 只有当异常发生时才会被传递 this;
+                                    }
+                                })
+                            } else {
+                                alert("标签名为空,,最长为30个字符");
+                            }
+                            return false;
+                        })
+
+                        $('#tagcancel').click(function () {
+                            $upt.remove('#div-tagupt');
+                            $upt.text(txt);
+                            c = true;
+                            return false;
+                        })
+                    }
+                });
+
+                $("#taglist .delete").live("click", function () {
+                    var $this = $(this);
+                    if (confirm("标签删除后不可恢复，并且该标签在文章中消失，请确认！") == true) {
+                        $.ajax({
+                            type: "post",
+                            url: "/User/DeleteTag?tid=" + $this.attr("del") + "&uid=" + $("#uid").val(),
+                            success: function (msg) {
+                                if (msg.Result == "OK") {
+                                    $this.parent().parent().remove();
+                                    var s = $('#taglist')[0].rows;
+                                    if (s.length == 1) {
+                                        window.location.reload();
+                                    }
+                                } else {
+                                    alert(msg.Message);
+                                }
+                            }
+                        })
+                    }
+                })
+            })
+
+
+            //--------------------相册-------------------------------
+            $("#tab-album").one("click", function () {
+                // 创建分页
+                $("#albumPagination").pagination($("#albumrecordcount").val(),
+                {
+                    num_edge_entries: 1, //边缘页数
+                    num_display_entries: 5, //主体页数
+                    callback: albumpaginationCallback, //回调函数
+                    items_per_page: ListItemNum, //每页显示多少项
+                    prev_text: "前一页",
+                    next_text: "后一页"
+                });
+
+                $("#albumPagination").hide();
+
+                $("#albumlist .delete").live("click", function () {
+                    var $this = $(this);
+                    if (confirm("您确认删除吗？请确认！") == true) {
+                        $.ajax({
+                            type: "post",
+                            url: "/User/DeleteAlbum?albumid=" + $this.attr("del") + "&uid=" + $("#uid").val(),
+                            success: function (msg) {
+                                if (msg.Result == "OK") {
+                                    $this.parent().parent().remove();
+                                    var s = $('#albumlist')[0].rows;
+                                    if (s.length == 1) {
+                                        window.location.reload();
+                                    }
+                                } else {
+                                    alert(msg.Message);
+                                }
+                            }
+                        })
+                    }
+                })
+            })
+
+
+
+            //--------------------照片-------------------------------
+            $("#tab-photo").one("click", function () {
+                // 创建分页
+                $("#photoPagination").pagination($("#photorecordcount").val(),
+                {
+                    num_edge_entries: 1, //边缘页数
+                    num_display_entries: 5, //主体页数
+                    callback: photopaginationCallback, //回调函数
+                    items_per_page: ListItemNum, //每页显示多少项
+                    prev_text: "前一页",
+                    next_text: "后一页"
+                });
+
+                $("#photoPagination").hide();
+
+
+                $("#photolist .update").live("click", function () {
+                    var $this = $(this);
+                    $upt = $this.parent().parent();
+                    $("#pid").val($this.attr("upt"));
+                    $("#photoname").val($upt.children('.photoname').children('a').text());
+                    $("#photodescription").val($upt.children('.photodescription').attr("title"));
+                    $("#album").val($upt.children('.albumname').children("input[type='hidden']").val());
+                    $("#Modal").click();
+                });
+
+                $("#photolist .delete").live("click", function () {
+                    var $this = $(this);
+                    if (confirm("您确认删除吗？请确认！") == true) {
+                        $.ajax({
+                            type: "post",
+                            url: "/User/DeletePhoto?pid=" + $this.attr("del") + "&uid=" + $("#uid").val(),
+                            success: function (msg) {
+                                if (msg.Result == "OK") {
+                                    $this.parent().parent().remove();
+                                    var s = $('#photolist')[0].rows;
+                                    if (s.length == 1) {
+                                        window.location.reload();
+                                    }
+                                } else {
+                                    alert(msg.Message);
+                                }
+                            }
+                        })
+                    }
+                })
+            })
+
+            $("#frmupdatephoto").validate({
+                errorClass: "help-inline",
+                rules: {
+                    album: {
+                        required: true
+                    },
+                    photoname: {
+                        required: true,
+                        maxlength: 20
+                    },
+                    photodescription: {
+                        maxlength: 150
+                    }
+                },
+                messages: {
+                    album: {
+                        required: "请选择相册"
+                    },
+                    photoname: {
+                        required: "请输入照片名",
+                        maxlength: "照片名最多20个字符"
+                    },
+                    photodescription: {
+                        maxlength: "照片描述最长为150位"
+                    }
+                },
+                highlight: function (element) {
+                    $(element).closest('.control-group').removeClass('success').addClass('error');
+                },
+                success: function (element) {
+                    element
+                    .text('OK!').addClass('valid')
+                    .closest('.control-group').removeClass('error').addClass('success');
+                }
+            });
+
+            $('#frmupdatephoto').on('submit', function (e) {
+                e.preventDefault();
+                if ($("#frmupdatephoto").valid()) {
+                    $(this).ajaxSubmit({
+                        type: "post",
+                        url: "/User/UpdatePhoto?uid=" + $("#uid").val(),
+                        beforeSend: function () {
+                            $("#loding").show();
+                        },
+                        success: function (msg) {
+                            $("#loding").hide();
+                            if (msg.Result == "OK") {
+                                var des = $("#photodescription").val();
+                                $upt.children('.photoname').children('a').text($("#photoname").val());
+                                $upt.children('.photodescription').attr('title', des);
+                                $upt.children('.photodescription').html((des.length > 20 ? des.substring(0, 20) : des));
+                                $upt.children('.albumname').html("<input type='hidden' value='" + $("#album").val() + "' />" + $("#album").children('option[selected]').text());
+                                $(".modal_close").click();
+                            } else {
+                                alert(msg.Message);
+                            }
+                        }
+                    });
+                }
+            });
+        })
+
+        function paginationCallback(page_index, jq) {
+            pageindex = page_index;
+            var sorting = "CreateTime DESC";
+            GetPageList(sorting);
+        }
+
+        function categorypaginationCallback(page_index, jq) {
+            category_pageindex = page_index;
+            GetCategoryPageList();
+        }
+
+        function tagpaginationCallback(page_index, jq) {
+            tag_pageindex = page_index;
+            GetTagPageList();
+        }
+
+        function albumpaginationCallback(page_index, jq) {
+            album_pageindex = page_index;
+            var sorting = "CreateTime DESC";
+            GetAlbumPageList(sorting);
+        }
+
+        function photopaginationCallback(page_index, jq) {
+            photo_pageindex = page_index;
+            var sorting = "CreateTime DESC";
+            GetPhotoPageList(sorting);
+        }
+
+        var GetPageList = function (sorting) {
+            var uid = $("#uid").val();
+            var data = { uid: uid, "PageIndex": pageindex, "ListItemNum": ListItemNum, "sorting": sorting };
+            ajax("/User/GetPageList", data);
+        }
+
+        var GetCategoryPageList = function () {
+            var uid = $("#uid").val();
+            var data = { uid: uid, "PageIndex": category_pageindex, "ListItemNum": ListItemNum };
+            categoryajax("/User/GetCategoryPageList", data);
+        }
+
+        var GetTagPageList = function () {
+            var uid = $("#uid").val();
+            var data = { uid: uid, "PageIndex": tag_pageindex, "ListItemNum": ListItemNum };
+            tagajax("/User/GetTagPageList", data);
+        }
+
+
+        var GetAlbumPageList = function (sorting) {
+            var uid = $("#uid").val();
+            var data = { uid: uid, "PageIndex": album_pageindex, "ListItemNum": ListItemNum, "sorting": sorting };
+            albumajax("/User/GetAlbumPageList", data);
+        }
+
+
+        var GetPhotoPageList = function (sorting) {
+            var uid = $("#uid").val();
+            var data = { uid: uid, "PageIndex": photo_pageindex, "ListItemNum": ListItemNum, "sorting": sorting };
+            photoajax("/User/GetPhotoPageList", data);
+        }
+
+        var ajax = function (url, data) {
+            $.ajax({
+                type: "post",
+                url: url,
+                data: data,
+                beforeSend: function () { $("#loadingimg").css({ 'margin-left': "380px" }).show() },
+                success: function (msg) {
+                    $("#loadingimg").hide();
+                    if (msg.Result == "OK") {
+                        var uname = $("#uname").val();
+                        var result = msg.Message;
+                        var str = "";
+                        str += "<table class='table table-hover' id='articlelist'><thead><tr><th>#</th></th><th>标题</th><th>阅读</th><th>评论</th><th>操作</th></tr></thead><tbody>";
+                        if (result.length != 0) {
+                            $.each(result, function (i, item) {
+                                str += "<tr><td>" + i + "</td><td><a href='/" + uname + "/Article/Detail/" + item.AID + "' target='_blank'>" + item.Title + "</a> </td><td>" + item.ViewNum + "</td><td>" + item.CommentNum + "</td><td>";
+                                str += "<a href='/" + uname + "/Article/postedit/" + item.AID + "' target='_blank'>编辑</a> | <a href='javascript:void(0);' class='delete' del='" + item.AID + "'>删除</a></td></tr>";
+                            });
+                            str += "</tbody></table>";
+                            if ($("#recordcount").val() > ListItemNum) {
+                                $("#Pagination").show();
+                            }
+                        }
+                        else {
+                            str = "<div class=\"article\">未找到文章！</div>";
+                        }
+                        $("#articlelist").remove();
+                        //$("#articlelist").append(str);
+                       
+                        $("#List").append(str);
+                    } else {
+                        alert(msg.Message);
+                    }
+                }
+            });
+        }
+
+        var categoryajax = function (url, data) {
+            $.ajax({
+                type: "post",
+                url: url,
+                data: data,
+                beforeSend: function () { $("#loadingimg1").css({ 'margin-left': "380px" }).show() },
+                success: function (msg) {
+                    $("#loadingimg1").hide();
+                    if (msg.Result == "OK") {
+                        var uname = $("#uname").val();
+                        var result = msg.Message;
+                        var str = "";
+                        str += "<table class='table table-hover' id='categorylist'><thead><tr><th>#</th></th><th>类别名</th><th>操作</th></tr></thead><tbody>";
+                        if (result.length != 0) {
+                            $.each(result, function (i, item) {
+                                str += "<tr><td>" + i + "</td><td class='cname'>" + item.CName + "</td><td>";
+                                str += "<a  href='javascript:void(0);' class='update' upt='" + item.CID + "'>修改</a> | <a href='javascript:void(0);' class='delete' del='" + item.CID + "'>删除</a></td></tr>";
+                            });
+                            str += "</tbody></table>";
+                            if ($("#categoryrecordcount").val() > ListItemNum) {
+                                $("#categoryPagination").show();
+                            }
+                        }
+                        else {
+                            str = "<div>未找到分类！</div>";
+                        }
+                        $("#categorylist").remove();
+                        $("#CategoryList").append(str);
+                    } else {
+                        alert(msg.Message);
+                    }
+                }
+            });
+        }
+
+        var tagajax = function (url, data) {
+            $.ajax({
+                type: "post",
+                url: url,
+                data: data,
+                beforeSend: function () { $("#loadingimg2").css({ 'margin-left': "380px" }).show() },
+                success: function (msg) {
+                    $("#loadingimg2").hide();
+                    if (msg.Result == "OK") {
+                        var uname = $("#uname").val();
+                        var result = msg.Message;
+                        var str = "";
+                        str += "<table class='table table-hover' id='taglist'><thead><tr><th>#</th></th><th>标签名</th><th>操作</th></tr></thead><tbody>";
+                        if (result.length != 0) {
+                            $.each(result, function (i, item) {
+                                str += "<tr><td>" + i + "</td><td class='tname'>" + item.TName + "</td><td>";
+                                str += "<a  href='javascript:void(0);' class='update' upt='" + item.TID + "'>修改</a> | <a href='javascript:void(0);' class='delete' del='" + item.TID + "'>删除</a></td></tr>";
+                            });
+                            str += "</tbody></table>";
+                            if ($("#tagrecordcount").val() > ListItemNum) {
+                                $("#tagPagination").show();
+                            }
+                        }
+                        else {
+                            str = "<div>未找到标签！</div>";
+                        }
+                        $("#taglist").remove();
+                        $("#TagList").append(str);
+                    } else {
+                        alert(msg.Message);
+                    }
+                }
+            });
+        }
+
+        var albumajax = function (url, data) {
+            $.ajax({
+                type: "post",
+                url: url,
+                data: data,
+                beforeSend: function () { $("#loadingimg3").css({ 'margin-left': "380px" }).show() },
+                success: function (msg) {
+                    $("#loadingimg3").hide();
+                    if (msg.Result == "OK") {
+                        var uname = $("#uname").val();
+                        var result = msg.Message;
+                        var str = "";
+                        str += "<table class='table table-hover' id='albumlist'><thead><tr><th>#</th></th><th>相册名</th><th>描述</th><th>照片数</th><th>操作</th></tr></thead><tbody>";
+                        if (result.length != 0) {
+                            $.each(result, function (i, item) {
+                                str += "<tr><td>" + i + "</td><td><a href='/" + uname + "/Album/" + item.AlbumID + "' target='_blank'>" + item.AlbumName + "</a></td><td title='" + item.Description + "'>" + (item.Description.length > 20 ? item.Description.substring(0, 20) : item.Description) + "</td><td>" + item.PhotoNum + "</td><td>";
+                                str += "<a href='javascript:void(0);' class='delete' del='" + item.AlbumID + "'>删除</a></td></tr>";
+                            });
+                            str += "</tbody></table>";
+                            if ($("#albumrecordcount").val() > ListItemNum) {
+                                $("#albumPagination").show();
+                            }
+                        }
+                        else {
+                            str = "<div>未找到相册！</div>";
+                        }
+                        $("#albumlist").remove();
+                        $("#AlbumList").append(str);
+                    } else {
+                        alert(msg.Message);
+                    }
+                }
+            });
+        }
+
+        var photoajax = function (url, data) {
+            $.ajax({
+                type: "post",
+                url: url,
+                data: data,
+                beforeSend: function () { $("#loadingimg4").css({ 'margin-left': "380px" }).show() },
+                success: function (msg) {
+                    $("#loadingimg4").hide();
+                    if (msg.Result == "OK") {
+                        var uname = $("#uname").val();
+                        var result = msg.Message;
+                        var str = "";
+                        str += "<table class='table table-hover' id='photolist'><thead><tr><th>#</th></th><th>照片名</th><th>描述</th><th>所属相册</th><th>创建时间</th><th>操作</th></tr></thead><tbody>";
+                        if (result.length != 0) {
+                            $.each(result, function (i, item) {
+                                var FormatDate = function (d) {
+                                    var date = new Date(parseInt(d.replace("/Date(", "").replace(")/", ""), 10));
+                                    var month = padLeft(date.getMonth() + 1, 10);
+                                    var currentDate = padLeft(date.getDate(), 10);
+                                    return date.getFullYear() + "-" + month + "-" + currentDate;
+                                }
+                                function padLeft(str, min) {
+                                    if (str >= min)
+                                        return str;
+                                    else
+                                        return "0" + str;
+                                }
+                                var date = FormatDate(item.CreateTime);
+                                str += "<tr><td>" + i + "</td><td class='photoname'><a href='" + item.Path + "' target='_blank' >" + item.PhotoName + "</a></td><td class='photodescription' title='" + item.Description + "'>" + (item.Description.length > 20 ? item.Description.substring(0, 20) : item.Description) + "</td><td class='albumname'><input type='hidden' value='" + item.AlbumID + "'/>" + item.AlbumName + "</td><td>" + date + "</td><td>";
+                                str += "<a  href='javascript:void(0);' class='update' upt='" + item.PID + "'>编辑</a> | <a href='javascript:void(0);' class='delete' del='" + item.PID + "'>删除</a></td></tr>";
+                            });
+                            str += "</tbody></table>";
+                            if ($("#photorecordcount").val() > ListItemNum) {
+                                $("#photoPagination").show();
+                            }
+                        }
+                        else {
+                            str = "<div>未找到照片！</div>";
+                        }
+                        $("#photolist").remove();
+                        $("#PhotoList").append(str);
+                    } else {
+                        alert(msg.Message);
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+

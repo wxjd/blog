@@ -1,0 +1,175 @@
+﻿body {
+    font-size: .85em;
+    font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
+    color: #232323;
+    background-color: #fff;
+    min-width: 1000px;
+}
+
+header, footer, nav, section {
+    display: block;
+}
+
+/* Styles for basic forms
+-----------------------------------------------------------*/
+fieldset {
+    border: 1px solid #ddd;
+    padding: 0 1.4em 1.4em 1.4em;
+    margin: 0 0 1.5em 0;
+}
+
+legend {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+textarea {
+    min-height: 75px;
+}
+
+.editor-label {
+    margin: 1em 0 0 0;
+}
+
+.editor-field {
+    margin: 0.5em 0 0 0;
+}
+
+#verifycode_img {
+    cursor: pointer;
+    height: 25px;
+    width: 60px;
+    padding-left: 5px;
+}
+/* Styles for validation helpers
+-----------------------------------------------------------*/
+.field-validation-error {
+    color: #f00;
+}
+
+.field-validation-valid {
+    display: none;
+}
+
+.input-validation-error {
+    border: 1px solid #f00;
+}
+
+.validation-summary-errors {
+    font-weight: bold;
+    color: #f00;
+}
+
+.validation-summary-valid {
+    display: none;
+}
+
+label.valid {
+    width: 24px;
+    height: 24px;
+    background: url(/Images/valid.png) center center no-repeat;
+    display: inline-block;
+    text-indent: -9999px;
+}
+
+label.error {
+    font-weight: bold;
+    color: red;
+    padding: 2px 8px;
+    margin-top: 2px;
+}
+/*::selection {background:#F64747; color:#FFF;text-shadow: none;}
+::-moz-selection {background:#F64747; color:#FFF;text-shadow: none;}
+::-webkit-selection {background:#F64747; color:#FFF;text-shadow: none;}*/
+.left {
+    float: left;
+}
+
+.right {
+    float: right;
+}
+
+.bodycolor {
+    background-color: #1F160E;
+    background-image: none;
+}
+
+.miniblog {
+    padding-top: 80px;
+    background: url("../Images/body_bg.jpg") no-repeat center 0;
+}
+
+#login {
+    float: right;
+    margin-top: 10px;
+    margin-right: 10px;
+    display: block;
+    font-size: .85em;
+    text-align: right;
+    color: #fff;
+}
+
+    #login a {
+        margin-left: 10px;
+        margin-right: 3px;
+        padding: 2px 3px;
+        text-decoration: none;
+    }
+
+        #login a.username {
+            text-decoration: underline;
+        }
+
+    #login ul {
+        margin: 0;
+    }
+
+    #login li {
+        display: inline;
+        list-style: none;
+    }
+
+#logoutForm {
+    display: inline;
+}
+
+fieldset ol li {
+    list-style: none;
+}
+
+#feedback {
+    background-image: url(../Images/feedback_tab.png);
+    background-color: #222222;
+    color: #FFFFFF;
+    cursor: pointer;
+    height: 38px;
+    margin-left: 50px;
+    overflow: hidden;
+    position: fixed;
+    text-indent: -100000px;
+    width: 102px;
+    z-index: 100000;
+    background-position: 0px 38px;
+    bottom: -5px;
+    right: 10%;
+}
+
+#myModal {
+    border-radius: 0px;
+}
+
+    #myModal .header {
+        background-color: #3561AF;
+    }
+
+    #myModal #myModalLabel {
+        color: #fff;
+    }
+
+    #myModal input, #myModal textarea, #myModal button {
+        border-radius: 0px;
+    }
+
+    #myModal input, #myModal textarea {
+        width: 90%;
+    }

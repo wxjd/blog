@@ -1,0 +1,183 @@
+﻿@{
+    ViewBag.Title = "注册";
+}
+
+<link href="~/Content/common.min.css" rel="stylesheet" />
+<link href="~/Content/twitter-bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+<link href="~/Content/twitter-bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" />
+<div id="reg">
+    <form id="frmregister" class="form-horizontal" style="margin-top:30px">
+        @Html.AntiForgeryToken()
+        <fieldset>
+            <legend class="form-signin-heading">帐号注册</legend>
+            <div class="control-group">
+                <label class="control-label" for="username">用户名</label>
+                <div class="controls">
+                    <input type="text" autocomplete="off" style="height:30px" class="input-xlarge" name="username" id="username">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="pwd">密码</label>
+                <div class="controls">
+                    <input type="password" style="height:30px" class="input-xlarge" name="pwd" id="pwd">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="pwda">确认密码</label>
+                <div class="controls">
+                    <input type="password" style="height:30px" class="input-xlarge" name="pwda" id="pwda">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="email">电子邮件</label>
+                <div class="controls">
+                    <input type="text" style="height:30px" autocomplete="off" class="input-xlarge" name="email" id="email">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="verifycode">验证码</label>
+                <div class="controls">
+                    <input type="text" autocomplete="off" style="height:30px" class="input-large" name="verifycode" id="verifycode">
+                    <img src="/VerificationCode/Index" id="verifycode_img" />
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="controls">
+                    <button id="register" type="submit" class="btn btn-success">注册</button>
+                    <img src="~/Content/Images/loading.gif" id="loding" style="display: none" />
+                </div>
+            </div>
+        </fieldset>
+    </form>
+    <div style="display: none; margin-left: auto; margin-right: auto; height: 400px;" id="activeinfo">
+        <div class="alert alert-success">
+            <p>帐号注册成功</p>
+            <p>请登录邮箱进行激活帐号</p>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.form.js"></script>
+    <script type="text/javascript">
+
+        jQuery.validator.addMethod("username", function (value, element) {
+            var val = /^[a-zA-Z][\w]{4,11}$/;
+            return this.optional(element) || (val.test(value));
+        }, "请输入合法用户名");
+
+        jQuery.validator.addMethod("userpwd", function (value, element) {
+            var val = /^[\w]{6,15}$/;
+            return this.optional(element) || (val.test(value));
+        }, "密码为6到15位");
+
+        jQuery.validator.addMethod("code", function (value, element) {
+            var val = /^[0-9a-zA-Z]{4}$/;
+            return this.optional(element) || (val.test(value));
+        }, "验证码由4位数字或字母组成");
+
+        $(function () {
+
+            $("#verifycode_img").click(function () {
+                showverifycode();
+            });
+
+            function showverifycode() {
+                var numkey = Math.random() + (new Date().getDate());
+                document.getElementById("verifycode_img").src = "/VerificationCode/Index?NumKey=" + numkey;
+            }
+            $("#frmregister").validate({
+                errorClass: "help-inline",
+                rules: {
+                    username: {
+                        required: true,
+                        minlength: 5,
+                        username: true,
+                        remote: {
+                            type: "POST",
+                            dataType: "json",
+                            url: "/Account/UserNameExistOrNot?username=" + $("#username").val()
+                        }
+                    },
+                    pwd: {
+                        required: true,
+                        minlength: 6,
+                        userpwd: true
+                    },
+                    pwda: {
+                        required: true,
+                        minlength: 6,
+                        equalTo: "#pwd"
+                    },
+                    email: {
+                        required: true,
+                        email: true,
+                        remote: {
+                            type: "POST",
+                            dataType: "json",
+                            url: "/Account/EmailExistOrNot?email=" + $("#email").val()
+                        }
+                    },
+                    verifycode: {
+                        required: true
+                    }
+                },
+                messages: {
+                    username: {
+                        required: "用户名为空",
+                        minlength: "用户名最短长度为5位",
+                        remote: "用户名已存在"
+                    },
+                    pwd: {
+                        required: "密码为空",
+                        minlength: "密码最短长度为6位"
+                    },
+                    pwda: {
+                        required: "密码为空",
+                        minlength: "密码最短长度为6位",
+                        equalTo: "两次输入密码不一致"
+                    },
+                    email: {
+                        required: "电子邮件地址为空",
+                        email: "电子邮件地址格式错误",
+                        remote: "电子邮件地址已存在"
+                    },
+                    verifycode: {
+                        required: "验证码为空"
+                    }
+                },
+                highlight: function (element) {
+                    $(element).closest('.control-group').removeClass('success').addClass('error');
+                },
+                success: function (element) {
+                    element
+                    .text('OK!').addClass('valid')
+                    .closest('.control-group').removeClass('error').addClass('success');
+                }
+            });
+
+            $('#frmregister').on('submit', function (e) {
+                e.preventDefault();
+                if ($("#frmregister").valid()) {
+                    $(this).ajaxSubmit({
+                        type: "post",
+                        url: "/Account/RegisterAjax",
+                        beforeSend: function () {
+                            $("#loding").show();
+                        },
+                        success: function (msg) {
+                            $("#loding").hide();
+                            if (msg.Result == "OK") {
+                                $("#frmregister").hide();
+                                $("#activeinfo").show();
+
+                            } else {
+                                alert(msg.Message);
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

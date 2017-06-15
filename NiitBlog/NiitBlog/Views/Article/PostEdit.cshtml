@@ -1,0 +1,482 @@
+﻿@{
+    Layout = null;
+    ViewBag.Title = "文章编辑";
+}
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js">
+<!--<![endif]-->
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title </title>
+    <link href="~/Content/common.min.css" rel="stylesheet" />
+    <link href="~/Content/twitter-bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/twitter-bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/twitter-bootstrap/bootstrap-tag.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/Scripts/kindeditor-4.1.7/themes/default/default.css" rel="stylesheet" type="text/css" />
+    <script src="~/Scripts/jquery-1.10.2.min.js" type="text/javascript"></script>
+    <style type="text/css">
+        .bg {
+            background: url('~/Content/Images/slide-02.jpg') repeat-x #fff;
+            height: 300px;
+        }
+
+            .bg .title {
+                margin-left: 200px;
+                margin-top: 80px;
+            }
+
+                .bg .title p {
+                    font-size: larger;
+                    margin-right: 100px;
+                }
+
+        .sidebar {
+            position: absolute;
+            top: 250px;
+            left: 80px;
+        }
+
+            .sidebar .headpic {
+                width: 140px;
+                height: 140px;
+                background-color: #fff;
+                border: 1px solid #ccc;
+                -webkit-box-shadow: 0 1px 3px rgba(0,0,0,.1);
+                -moz-box-shadow: 0 1px 3px rgba(0,0,0,.1);
+                box-shadow: 0 1px 3px rgba(0,0,0,.1);
+            }
+
+        #headpic_img {
+            width: 140px;
+            height: 140px;
+        }
+
+        #articlecontent {
+            padding-top: 150px;
+        }
+
+            #articlecontent #frmpostedit {
+                width: 86%;
+                margin: 0px auto;
+            }
+
+            #articlecontent input, #articlecontent select, #articlecontent .tags, #articlecontent textarea {
+                border-radius: 0px;
+            }
+
+        @@media (max-width: 768px) {
+            .sidebar {
+                position: absolute;
+                top: 280px;
+                left: 80px;
+                width: 240px;
+            }
+        }
+
+        #login_area {
+            color: #5b5b5b;
+            font-size: 12px;
+            overflow: hidden;
+            text-align: right;
+            height: 22px;
+            line-height: 22px;
+            margin-right: 30px;
+        }
+
+            #login_area a {
+                padding-left: 15px;
+            }
+
+            #login_area ul {
+                list-style: none;
+            }
+
+                #login_area ul li {
+                    display: inline;
+                    padding-left: 15px;
+                }
+
+        #lean_overlay {
+            position: fixed;
+            z-index: 100;
+            top: 0px;
+            left: 0px;
+            height: 100%;
+            width: 100%;
+            background: #000;
+            display: none;
+        }
+
+        #addcat {
+            width: 600px;
+            padding-bottom: 2px;
+            display: none;
+            background: #FFF;
+            border-radius: 5px;
+            -moz-border-radius: 5px;
+            -webkit-border-radius: 5px;
+            box-shadow: 0px 0px 4px rgba(0,0,0,0.7);
+            -webkit-box-shadow: 0 0 4px rgba(0,0,0,0.7);
+            -moz-box-shadow: 0 0px 4px rgba(0,0,0,0.7);
+        }
+
+        #addcat-header {
+            background: url(/Images/hd-bg.png);
+            padding: 18px 18px 14px 18px;
+            border-bottom: 1px solid #CCC;
+            border-top-left-radius: 5px;
+            -moz-border-radius-topleft: 5px;
+            -webkit-border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+            -moz-border-radius-topright: 5px;
+            -webkit-border-top-right-radius: 5px;
+        }
+
+        #addca-header h2 {
+            color: #444;
+            font-size: 2em;
+            font-weight: 700;
+            margin-bottom: 3px;
+            text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
+        }
+
+        #addcat #addcat-body {
+            padding: 14px 50px;
+        }
+
+        #addcat-body #frmaddcategory {
+            min-height: 100px;
+        }
+
+        .modal_close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            display: block;
+            width: 14px;
+            height: 14px;
+            background: url(/Images/modal_close.png);
+            z-index: 2;
+        }
+    </style>
+</head>
+<body>
+    <div id="login_area" class="clearfix">
+        @if (HttpContext.Current.User.Identity.IsAuthenticated)
+        {
+            <text>
+            @Html.ActionLink(User.Identity.Name, "Profile", "Account", routeValues: null, htmlAttributes: new { @class = "username" })
+            @Html.ActionLink("我的相册", "Index", "Album", routeValues: new { username = @HttpContext.Current.User.Identity.Name }, htmlAttributes: null)
+            @Html.ActionLink("我的博客", "Index", "User", routeValues: new { username = @HttpContext.Current.User.Identity.Name }, htmlAttributes: null)
+            @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm" }))
+            {
+                @Html.AntiForgeryToken()
+<a href="javascript:document.getElementById('logoutForm').submit()">注销</a>
+            }
+            </text>
+        }
+        else
+        {
+            <ul>
+                <li>@Html.ActionLink("注册", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
+                <li>@Html.ActionLink("登录", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
+            </ul>
+        }
+    </div>
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <div class="span12 bg">
+                <div class="title">
+                    <h1>@Model.NickName </h1>
+                    <p>@Model.SelfIntro</p>
+                </div>
+            </div>
+        </div>
+        <div class="sidebar">
+            <div class="headpic">
+                <img  id="headpic_img" src="@Model.HeadPic"/>
+            </div>
+            <div class="nickname">
+                <h3 class="text-left text-success left">昵称：<a href="/@Model.UserName">@Model.NickName</a></h3>
+            </div>
+        </div>
+    </div>
+    <div class="row-fluid" id="articlecontent">
+        <div class="span12">
+            <div class="article-detail" id="detail">
+                <input type="hidden" value="@ViewBag.articleAid " id="aid" />
+                <form id="frmpostedit">
+                    @Html.AntiForgeryToken()
+                    <div class="control-group">
+                        <label class="control-label" for="title">标题</label>
+                        <div class="controls">
+                            <input type="text" autocomplete="off" class="input-xlarge" name="title" id="title" value="@ViewBag.articleTitle ">
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="gender">类别</label>
+                        <div class="controls">
+                            @Html.DropDownList("Category", "===请选择===")
+                            <a href="#addcat" rel="leanModal" id="addcategory" data-toggle='tooltip' data-placement='right' title="添加分类"><i class="icon-plus"></i></a>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="Content">内容</label>
+                        <div class="controls">
+                            <textarea name="Content" id="Content" class="required">@ViewBag.articleContent</textarea>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="Summery">摘要</label>
+                        <div class="controls">
+                            <textarea name="Summery" id="Summery" style="width: 80%; height: 200px" rows="5">@ViewBag.articleSummery</textarea>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="Description">标签</label>
+                        <div class="controls">
+                            <input  class="input-tag" type="text" id="tags" name="tags" data-provide="tag" value="@ViewBag.articleTags">
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <div class="controls">
+                            <button type="submit" class="btn" id="sub_btn">提交</button>
+                            <img src="~/Images/loading.gif" id="loding" style="display: none" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <input  type="hidden" id="uid" value="@Model.UID"/>
+    <input type="hidden" id="uname" value="@Model.UserName" />
+    <div class="row-fluid">
+        <div class="span12" style="text-align: center;">
+            @@2013 @Model.UserName Powered By <a href="mailto:11111111@qq.com">学好IT不挨踢</a>
+        </div>
+    </div>
+    <div id="addcat" >
+        <div id="addcat-ct" style="display: none">
+            <div id="addcat-header">
+                <h2>添加分类</h2>
+                <a class="modal_close" href="#"></a>
+            </div>
+            <div id="addcat-body">
+                <form id="frmaddcategory">
+                    @Html.AntiForgeryToken()
+                    <div class="control-group">
+                        <label class="control-label" for="cname">分类名</label>
+                        <div class="controls">
+                            <input type="text" class="input-large" name="cname" id="cname" maxlength="25">
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <div class="controls">
+                            <button type="submit" class="btn right">添加</button>
+                            <img src="/Content/Images/loading.gif" id="loding1" style="display: none" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="~/Scripts/twitter-bootstrap/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="~/Scripts/kindeditor-4.1.7/kindeditor-min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="~/Scripts/kindeditor-4.1.7/lang/zh_CN.js" type="text/javascript" charset="utf-8"></script>
+    <script src="~/Scripts/twitter-bootstrap/bootstrap-tag.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="~/Scripts/jquery.validate.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="~/Scripts/jquery.form.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="~/Scripts/jquery.leanModal.min.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript">
+        var editor;
+        KindEditor.ready(function (K) {
+            editor = K.create("#Content", {
+                width: "1000px",
+                height: "500px",
+                allowImageUpload: true,
+                uploadJson: '/Upload/UploadFile',
+                afterCreate: function () { this.sync(); },
+                afterBlur: function () { this.sync(); $("#Content").trigger("blur"); },
+                items: [
+               'fontname', 'fontsize', '|', 'undo', 'redo', '|', 'code', 'cut', 'copy', 'paste', 'plainpaste', 'wordpaste', '|', 'forecolor', 'hilitecolor', 'bold', 'italic', 'underline',
+               'removeformat', '|', 'justifyleft', 'justifycenter', 'justifyright', 'insertorderedlist',
+               'insertunorderedlist', 'indent', 'outdent', 'subscript', 'superscript', 'quickformat', 'selectall', '|', 'emoticons', 'image', 'multiimage', 'hr', 'pagebreak', 'anchor', 'insertfile', 'table', 'link', 'unlink']
+            });
+        });
+
+        $(document).ready(function () {
+
+            var h = $('.sidebar').height() + 80;
+            $("#articlecontent").css({ 'min-height': h });
+
+            $(".controls").tooltip({
+                selector: "a[data-toggle=tooltip]"
+            })
+
+            $("#frmpostedit").validate({
+                errorClass: "help-inline",
+                rules: {
+                    title: {
+                        required: true,
+                        maxlength: 100
+                    },
+                    Category: {
+                        required: true
+                    },
+                    Content: {
+                        required: true
+                    },
+                    Summery: {
+                        required: true,
+                        maxlength: 500
+                    }
+                },
+                messages: {
+                    title: {
+                        required: "请输入标题",
+                        maxlength: "标题最长为100个字符"
+                    },
+                    Category: {
+                        required: "请选择"
+                    },
+                    Content: {
+                        required: "请输入内容"
+                    },
+                    Summery: {
+                        required: true,
+                        maxlength: "摘要最长为500个字符"
+                    }
+                },
+                highlight: function (element) {
+                    $(element).closest('.control-group').removeClass('success').addClass('error');
+                },
+                success: function (element) {
+                    element
+                    .closest('.control-group').removeClass('error').addClass('success');
+                }
+            });
+
+            $('#frmpostedit').on('submit', function (e) {
+                e.preventDefault();
+                if ($("#frmpostedit").valid()) {
+                    $(this).ajaxSubmit({
+                        type: "post",
+                        url: "/Article/Postedit?aid=" + $("#aid").val() + "&uid=" + $("#uid").val(),
+                        beforeSend: function () {
+                            $("#loding").show();
+                        },
+                        success: function (msg) {
+                            $("#loding").hide();
+                            if (msg.Result == "OK") {
+                                alert("文章提交成功！");
+                                window.location.href = "/" + $("#uname").val() + "/Article/Detail/" + msg.Message;
+
+                            } else {
+                                alert(msg.Message);
+                            }
+                        }
+                    });
+                }
+            });
+
+            $("a[rel*=leanModal]").leanModal({ top: 150, closeButton: ".modal_close" });
+
+
+            $("#frmaddcategory").validate({
+                errorClass: "help-inline",
+                rules: {
+                    cname: {
+                        required: true,
+                        maxlength: 25,
+                        remote: {
+                            type: "POST",
+                            dataType: "json",
+                            url: "/Article/CategoryExist?cname=" + $("#cname").val() + "&uid=" + $("#uid").val()
+                        }
+                    }
+                },
+                messages: {
+                    cname: {
+                        required: "请输入分类名",
+                        maxlength: "分类名最多25个字符",
+                        remote: "类别已存在"
+                    }
+                },
+                highlight: function (element) {
+                    $(element).closest('.control-group').removeClass('success').addClass('error');
+                },
+                success: function (element) {
+                    element
+                    .text('OK!').addClass('valid')
+                    .closest('.control-group').removeClass('error').addClass('success');
+                }
+            });
+
+            $('#frmaddcategory').on('submit', function (e) {
+                e.preventDefault();
+                if ($("#frmaddcategory").valid()) {
+                    $(this).ajaxSubmit({
+                        type: "post",
+                        url: "/Article/AddCategory?uid=" + $("#uid").val(),
+                        beforeSend: function () {
+                            $("#loding").show();
+                        },
+                        success: function (msg) {
+                            $("#loding").hide();
+                            if (msg.Result == "OK") {
+                                $("#Category").append("<option value='" + msg.Message + "'>" + $("#cname").val() + "</option>");
+                                $(".modal_close").click();
+                            } else {
+                                alert(msg.Message);
+                            }
+                        }
+                    });
+                }
+            });
+
+            var del1 = function (tag, that, count) {
+                if (confirm("您真的确定要删除吗？请确认！") == true) {
+                    $.ajax({
+                        type: "post",
+                        url: "/Article/DeleteArticleTag?tname=" + tag[0].innerText.replace('×', '') + "&aid=" + $("#aid").val() + "&uid=" + $("#uid").val(),
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.Result == "Error") {
+                                alert(data.Message);
+                            } else {
+                                that.remove(count - 1)
+                            }
+                        }
+                    })
+                }
+            }
+
+            var del2 = function (value, that, $this) {
+                if (confirm("您真的确定要删除吗？请确认！") == true) {
+                    $.ajax({
+                        type: "post",
+                        url: "/Article/DeleteArticleTag?tname=" + value + "&aid=" + $("#aid").val() + "&uid=" + $("#uid").val(),
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.Result == "Error") {
+                                alert(data.Message);
+                            } else {
+                                that.remove(that.element.siblings('.tag').index($this.closest('.tag')))
+                            }
+                        }
+                    });
+                }
+            }
+
+            $('.input-tag').tag({ postedit: true, del1: del1, del2: del2 });
+        })
+    </script>
+</body>
+</html>
+
+
+

@@ -1,0 +1,311 @@
+﻿@{
+    Layout = null;
+    bool u = Model.UserName == HttpContext.Current.User.Identity.Name ? true : false;
+}
+@using NiitBlog.Models
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js">
+<!--<![endif]-->
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>相册-@Model.UserName</title>
+    <link href="~/Content/common.min.css" rel="stylesheet" />
+    <link href="~/Content/twitter-bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/twitter-bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/jquery.comment.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/Scripts/highslide/highslide.min.css" rel="stylesheet" type="text/css" />
+    <!--[if lt IE 7]><link rel="stylesheet" type="text/css" href="~/Scripts/highslide/highslide-ie6.min.css" /><![endif]-->
+    <!--[if lte IE 6]><link rel="stylesheet" type="text/css" href="~/Content/twitter-bootstrap/bootstrap-ie6.min.css"><link rel="stylesheet" type="text/css" href="~/Content/twitter-bootstrap/ie.css"><![endif]-->
+    <style type="text/css">
+        .bg {
+            background: url('/Content/Images/slide-02.jpg') repeat-x #fff;
+            height: 300px;
+        }
+
+            .bg .title {
+                margin-left: 200px;
+                margin-top: 80px;
+            }
+
+                .bg .title p {
+                    font-size: larger;
+                    margin-right: 100px;
+                }
+
+        .sidebar {
+            position: absolute;
+            top: 250px;
+            left: 80px;
+        }
+
+            .sidebar .headpic {
+                width: 140px;
+                height: 140px;
+                background-color: #fff;
+                border: 1px solid #ccc;
+                -webkit-box-shadow: 0 1px 3px rgba(0,0,0,.1);
+                -moz-box-shadow: 0 1px 3px rgba(0,0,0,.1);
+                box-shadow: 0 1px 3px rgba(0,0,0,.1);
+            }
+
+        #headpic_img {
+            width: 140px;
+            height: 140px;
+        }
+
+        #photocontent {
+            padding-top: 150px;
+            padding-bottom: 130px;
+        }
+
+            #photocontent .main {
+                width: 1024px;
+                margin: 0 auto;
+            }
+
+                #photocontent .main .photolist ul {
+                    list-style: none;
+                }
+
+                    #photocontent .main .photolist ul li {
+                        display: inline;
+                    }
+
+        @@media (max-width: 768px) {
+            .sidebar {
+                position: absolute;
+                top: 280px;
+                left: 80px;
+                width: 240px;
+            }
+        }
+
+        #login_area {
+            color: #5b5b5b;
+            font-size: 12px;
+            overflow: hidden;
+            text-align: right;
+            height: 22px;
+            line-height: 22px;
+            margin-right: 30px;
+        }
+
+            #login_area a {
+                padding-left: 15px;
+            }
+
+            #login_area ul {
+                list-style: none;
+            }
+
+                #login_area ul li {
+                    display: inline;
+                    padding-left: 15px;
+                }
+
+        .highslide-caption {
+            display: none;
+            border-top: none;
+            font-size: 1em;
+            padding: 5px;
+            background: none;
+            text-align: left;
+            margin-left: 15px;
+        }
+
+        .login_tips {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .commentSection {
+            width:1024px;
+        }
+    </style>
+</head>
+<body>
+    <div id="login_area" class="clearfix">
+        @if (HttpContext.Current.User.Identity.IsAuthenticated)
+        {
+            <text>
+            @Html.ActionLink(User.Identity.Name, "Profile", "Account", routeValues: null, htmlAttributes: new { @class = "username" })
+            @Html.ActionLink("我的相册", "Index", "Album", routeValues: new { username = @HttpContext.Current.User.Identity.Name }, htmlAttributes: null)
+            @Html.ActionLink("我的博客", "Index", "User", routeValues: new { username = @HttpContext.Current.User.Identity.Name }, htmlAttributes: null)
+            @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm" }))
+            {
+                @Html.AntiForgeryToken()
+<a href="javascript:document.getElementById('logoutForm').submit()">注销</a>
+            }
+            </text>
+        }
+        else
+        {
+            <ul>
+                <li>@Html.ActionLink("注册", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
+                <li>@Html.ActionLink("登录", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
+            </ul>
+        }
+    </div>
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <div class="span12 bg">
+                <div class="title">
+                    <h1>@Model.NickName </h1>
+                    <p>@Model.SelfIntro</p>
+                </div>
+            </div>
+        </div>
+        <div class="sidebar">
+            <div class="headpic">
+                <img  id="headpic_img" src="@Model.HeadPic"/>
+            </div>
+            <div class="nickname">
+                <h3 class="text-left text-success left">昵称：<a href="/@Model.UserName">@Model.NickName</a></h3>
+            </div>
+        </div>
+    </div>
+    <div class="row-fluid" id="photocontent">
+        <div class="span12">
+            <div class="main">
+                <ul class="breadcrumb" style="background-color: #fff; padding: 0px;">
+                    <li>
+                        <a href="/@Model.UserName/Album">@if (u)
+                                                         {<text>我的相册</text>}
+                                                         else
+                                                         {@(Model.UserName)<text>的相册</text>}
+                        </a><span class="divider">/</span>
+                    </li>
+                    <li class="active">
+                        @ViewBag.AlbumName
+                    </li>
+                </ul>
+                <div class="photolist">
+                    @{    
+                        int i = 0;
+                        foreach (Photos p in ViewData["photos"] as IQueryable<Photos>)
+                        {
+                            if (i % 3 == 0)
+                            {@Html.OutPut("<ul class=\"thumbnails\">")}
+                        <li class="span4">
+                            <div class="photo">
+                                <a class='highslide' href='@p.Path' onclick="return hs.expand(this)">
+                                    <img src='@p.Thumbnail' alt='@p.PhotoName' title="点击查看大图" /></a>
+                                <div class="highslide-caption">
+                                    <input type="hidden" name="pid" class="pid"  value="@p.PID"/>
+                                    <span>照片名称:@p.PhotoName</span><br />
+                                    <span>照片描述:@p.Description</span>
+                                </div>
+                            </div>
+                        </li>
+                            if (i % 3 == 2)
+                            {@Html.OutPut("</ul>")} i++;
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <input  type="hidden" id="uid" value="@Model.UID"/>
+    <input type="hidden" id="uname" value="@Model.UserName" />
+    <input type="hidden" value="@HttpContext.Current.User.Identity.Name" id="commentusername" />
+    @if (HttpContext.Current.User.Identity.IsAuthenticated)
+    { 
+        <input type="hidden" value="false" class="hiddeninput" />
+    }
+    else
+    {
+        <input type="hidden" value="true" class="hiddeninput" />
+               
+    }
+    <div class="row-fluid">
+        <div class="span12" style="text-align: center;">
+            &copy; @DateTime.Now.Year   Powered By <a href="mailto:niitwxjd@163.com">NIIT博客之学好IT不挨踢</a>
+        </div>
+    </div>
+    <script src="~/Scripts/jquery-1.10.2.min.js" type="text/javascript"></script>
+    <script src="~/Scripts/twitter-bootstrap/bootstrap.min.js" type="text/javascript"></script>
+    <script src="~/Scripts/highslide/highslide-full.min.js" type="text/javascript"></script>
+    <script src="~/Scripts/jquery.comment.min.js" type="text/javascript"></script>
+    <!--[if lte IE 6]><script type="text/javascript" src=~/Scripts/twitter-bootstrap/bootstrap-ie.js"></script><![endif]-->
+    <script type="text/javascript">
+        hs.graphicsDir = '/Scripts/highslide/graphics/';
+        hs.align = 'center';
+        hs.transitions = ['expand', 'crossfade'];
+        hs.fadeInOut = true;
+        hs.dimmingOpacity = 0.8;
+        hs.outlineType = 'rounded-white';
+        hs.marginBottom = 30; // make room for the thumbstrip and the controls
+        hs.numberPosition = 'caption';
+        hs.captionOverlay.position = 'rightpanel';
+        hs.captionOverlay.width = '300px';
+
+        // Add the controlbar
+        if (hs.addSlideshow) hs.addSlideshow({
+            //slideshowGroup: 'group1',
+            interval: 5000,
+            repeat: false,
+            useControls: true,
+            fixedControls: 'fit',
+            overlayOptions: {
+                opacity: .6,
+                position: 'bottom center',
+                hideOnMouseOut: true
+            },
+            thumbstrip: {
+                position: 'above',
+                mode: 'horizontal',
+                relativeTo: 'expander'
+            }
+        });
+
+        hs.Expander.prototype.onAfterGetCaption = function (sender) {
+            if (sender.caption) {
+                var str= "<div class='login_tips'>注册用户登录后才能发表评论，请 <a rel='nofollow' href='/Account/Login' >登录</a> 或 <a rel='nofollow' href='/Account/Register' >注册</a>，<a href='/'>访问</a>网站首页。</div>";
+                var com = $("<div class=\"commentSection\"></div>");
+                if ($(".hiddeninput").val() == "false") {
+                    $(sender.caption).append(com);
+                } else {
+                    $(sender.caption).append(com.append(str));
+                }
+                var pid = $(sender.caption).children("input[class='pid']").val();
+                com.attr({ id: pid });
+                var commentusername = $("#commentusername").val();
+                var $hide = $(".hiddeninput").val();
+                var readonly;
+                if ($hide == "true") {
+                    readonly = true;
+                } else {
+                    readonly = false;
+                }
+
+                $("#"+pid).comments({
+                    getCommentsUrl: "/Album/GetComments?pid=" + pid + "&commentusername=" + commentusername,
+                    postCommentUrl: "/Album/PostComment?pid=" + pid + "&commentusername=" + commentusername,
+                    deleteCommentUrl: "/Album/DeleteComment?pid=" + pid + "&commentusername=" + commentusername,
+                    displayAvatar: true,
+                    readOnly: readonly,
+                    callback: {
+                        beforDelete: function () {
+                            return confirm("确定删除？?");
+                        }
+                    },
+                    localization: {
+                        headerText: "评论",
+                        commentPlaceHolderText: "呃！说点什么吧！（150字以内）",
+                        sendButtonText: "发送",
+                        replayButtonText: "回复",
+                        deleteButtonText: "删除"
+                    }
+                });
+            }
+        };
+    </script>
+</body>
+</html>
+
+
+

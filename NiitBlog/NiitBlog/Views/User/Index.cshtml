@@ -1,0 +1,128 @@
+﻿@{
+    ViewBag.Title = "我的博客首页";
+    Layout = "~/Views/Shared/Blog.cshtml";
+}
+<div class="row-fluid">
+    <div class="span3">
+    </div>
+    <div class="span9">
+        <div class="row-fluid">
+            <div class="span12" id="articlecontent">
+                <div id="List">
+                    <img id="loadingimg" src="/content/Images/loading.gif" style="display: none;" />
+                </div>
+                <div id="Pagination" class="pagination">
+                </div>
+                <input type="hidden" value="@ViewBag.CID" id="cid" />
+                <input type="hidden" value="@ViewBag.TID" id="tid" />
+                <input type="hidden" value="@ViewBag.Year" id="y" />
+                <input type="hidden" value="@ViewBag.Month" id="m"/>
+                <input type="hidden" value="@ViewBag.RecordCount" id="recordcount" />
+            </div>
+        </div>
+    </div>
+</div>
+<div>
+    @if (HttpContext.Current.User.Identity.Name != @Model.UserName)
+    {<br />
+        <a href="/@Model.UserName/Album" target="_blank">他的相册</a>}
+</div>
+@section scriptsahead{
+    <script src="~/Scripts/jquery.pagination.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var ListItemNum = 5; //每页显示多少条信息
+        var pageindex;
+        $(function () {
+            // 创建分页
+            $("#Pagination").pagination($("#recordcount").val(),
+            {
+                num_edge_entries: 1, //边缘页数
+                num_display_entries: 5, //主体页数
+                callback: paginationCallback, //回调函数
+                items_per_page: ListItemNum, //每页显示多少项
+                prev_text: "前一页",
+                next_text: "后一页"
+            });
+            $("#Pagination").hide();
+        });
+
+        function paginationCallback(page_index, jq) {
+            pageindex = page_index;
+            var sorting = "CreateTime DESC";
+            GetPageList(sorting);
+        }
+
+        var GetPageList = function (sorting) {
+            var uid = $("#uid").val();
+            var cid = $("#cid").val();
+            var tid = $("#tid").val();
+            var y = $("#y").val();
+            var m = $("#m").val();
+            if (tid == "" && (y == "" || m == "") && cid == "") {
+                var data = { uid: uid, "PageIndex": pageindex, "ListItemNum": ListItemNum, "sorting": sorting };
+                ajax("/Article/GetPageList", data);
+            } else if (tid == "" && cid == "") {
+                var data = { uid: uid, "PageIndex": pageindex, "ListItemNum": ListItemNum, "sorting": sorting, "y": y, "m": m };
+                ajax("/Article/GetPageListByYearMonth", data);
+            }
+            else if (cid == "") {
+                var data = { uid: uid, "PageIndex": pageindex, "ListItemNum": ListItemNum, "sorting": sorting, "tid": tid };
+                ajax("/Article/GetPageListByTid", data);
+            } else {
+                var data = { uid: uid, "PageIndex": pageindex, "ListItemNum": ListItemNum, "sorting": sorting, "cid": cid };
+                ajax("/Article/GetPageListByCid", data);
+            }
+        }
+
+        var ajax = function (url, data) {
+            $.ajax({
+                type: "post",
+                url: url,
+                data: data,
+                beforeSend: function () { $("#loadingimg").css({ 'margin-left': "380px" }).show() },
+                success: function (msg) {
+                    $("#loadingimg").hide();
+                    if (msg.Result == "OK") {
+                        var uname = $("#uname").val();
+                        var result = msg.Message;
+                        var str = "";
+                        if (result.length != 0) {
+                            $.each(result, function (i, item) {
+                                var FormatDate = function (d) {
+                                    var date = new Date(parseInt(d.replace("/Date(", "").replace(")/", ""), 10));
+                                    var month = padLeft(date.getMonth() + 1, 10);
+                                    var currentDate = padLeft(date.getDate(), 10);
+                                    return date.getFullYear() + "-" + month + "-" + currentDate;
+                                }
+                                function padLeft(str, min) {
+                                    if (str >= min)
+                                        return str;
+                                    else
+                                        return "0" + str;
+                                }
+                                var date = FormatDate(item.CreateTime);
+                                var tagsname = "";
+                                $.each(item.Tag, function (i, tagitem) {
+                                    tagsname += tagitem + " ";
+                                });
+                                str += "<div class=\"article\"><a target='_blank' href=\"/" + uname + "/Article/Detail/" + item.AID + "\" style='text-decoration:none;'><h3>" + item.Title + "</h3></a>";
+                                str += "<p>" + item.Summery + "</p>";
+                                str += "<p>日期：" + date + "</p><p>标签：" + tagsname + "<a class=\"btn\" href=\"/" + uname + "/Article/Detail/" + item.AID + "\" target='_blank'>继续阅读 »</a></p></div>";
+                            });
+                            if ($("#recordcount").val() > ListItemNum) {
+                                $("#Pagination").show();
+                            }
+                        }
+                        else {
+                            str = "<div class=\"article\">未找到文章！</div>";
+                        }
+                        $(".article").remove();
+                        $("#List").append(str);
+                    } else {
+                        alert(msg.Message);
+                    }
+                }
+            });
+        }
+    </script>
+}
